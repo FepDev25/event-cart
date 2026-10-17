@@ -43,7 +43,7 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 | M0 | Scaffolding y fundaciones | `[x]` | Resuelta |
 | M1 | Dominio + diseño de base de datos | `[x]` | Resuelta |
 | M2 | Backend: reserva atómica + checkout simulado | `[x]` | Resuelta |
-| M3 | Outbox transaccional + Kafka | `[ ]` | Sí |
+| M3 | Outbox transaccional + Kafka | `[~]` | Resuelta |
 | M4 | Caducidad, reconciliación y fallos | `[ ]` | Sí |
 | M5 | Diseño UI/UX (previo al frontend) | `[ ]` | Sí |
 | M6 | Frontend comprador / organizador / laboratorio mínimo | `[ ]` | Sí |
@@ -182,15 +182,20 @@ Tests de integración demuestran: cero sobreventa, sin reservas duplicadas por r
 
 **Objetivo:** emitir eventos de negocio **realmente comprometidos** vía Transactional Outbox y procesarlos con consumidores idempotentes con efectos observables.
 
-### Fase de decisiones previa (ronda de preguntas)
-- [ ] **Contrato de eventos**: campos (`event_id`, `type`, `version`, `aggregate_id`, `occurred_at`, payload acotado) y esquema/validación.
-- [ ] **Serialización**: JSON+Jackson vs Avro/schema registry (proponer JSON versionado para V1).
-- [ ] **Topics y particionado**: nombres de topics y clave de partición (`aggregate_id`) para orden por agregado.
-- [ ] **Publicador outbox**: polling vs CDC; batching; marca de publicado; manejo de fallos y reintentos.
-- [ ] **Consumidores**: cuántos/grupos (notificación, proyección de ventas, auditoría) y qué efecto observable tiene cada uno.
-- [ ] **Deduplicación**: tabla `processed_events` por consumidor y clave.
-- [ ] **Retries/backoff y DLQ**: umbrales, topic de DLQ y procedimiento de reproceso controlado.
-- [ ] **Compose Kafka**: modo **KRaft** vs Zookeeper; incluir Kafka UI.
+### Fase de decisiones previa — RESUELTA
+- [x] **Contrato**: envelope JSON autocontenido `{eventId, type, version, aggregateId, occurredAt, payload}`.
+- [x] **Serialización**: JSON (Jackson 3) versionado.
+- [x] **Topics/particionado**: un topic por dominio (`eventcart.reservation`, `eventcart.order`); clave = `aggregateId`.
+- [x] **Outbox**: `outbox(id, aggregate_id, event_type, payload jsonb, occurred_at, published_at nullable, attempts, created_at)`.
+- [x] **Publicador**: `@Scheduled` polling por batch, publica y marca `published_at` (recuperación tras reinicio), orden por agregado.
+- [x] **Consumidores**: 3 grupos — Notifications (efecto ficticio), Sales Projection (tabla de lectura), Audit/Operations (append-only).
+- [x] **Deduplicación**: tabla `processed_events(consumer, event_id)` UNIQUE, insertada en la misma tx que el efecto.
+- [x] **Reintentos/DLQ**: Spring Kafka `DefaultErrorHandler` + `DeadLetterPublishingRecoverer` a `<topic>.DLT` con backoff.
+- [x] **Garantía**: ack tras aplicar el efecto; semántica **at-least-once** (sin prometer exactly-once).
+- [x] **Eventos M3**: `ReservationCreated`, `ReservationReleased`, `OrderConfirmed`, `PaymentSimulationFailed`.
+- [x] **Compose**: Apache Kafka en modo **KRaft** + Kafka UI.
+- [x] **Tests**: Testcontainers Kafka (outbox→publicación, redelivery, dedup, DLQ).
+- Stack verificado: `spring-boot-starter-kafka` (spring-kafka 4.1.x, kafka-clients 4.3.x).
 
 ### Tareas
 - [ ] Tabla `outbox` + escritura en la **misma transacción** del cambio de estado.
