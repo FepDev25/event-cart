@@ -4,7 +4,6 @@ import com.eventcart.identity.security.TokenAuthenticationFilter;
 import com.eventcart.identity.service.AuthService;
 import com.eventcart.web.ProblemResponses;
 import tools.jackson.databind.ObjectMapper;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,7 +22,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@EnableConfigurationProperties(AuthProperties.class)
 public class SecurityConfig {
 
     @Bean
@@ -42,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/**", "/actuator/info")
                         .permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/launches/*/reservations").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/launches", "/api/v1/launches/**").permitAll()
                         .requestMatchers("/api/v1/launches/**").hasRole("ORGANIZER")
                         .anyRequest().authenticated())
