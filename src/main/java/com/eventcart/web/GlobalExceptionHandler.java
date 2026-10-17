@@ -7,7 +7,9 @@ import com.eventcart.launch.LaunchNotOpenException;
 import com.eventcart.launch.OutsideSaleWindowException;
 import com.eventcart.reservation.PurchaseLimitExceededException;
 import com.eventcart.shared.DomainException;
+import com.eventcart.shared.ForbiddenException;
 import com.eventcart.shared.InvalidStateTransitionException;
+import com.eventcart.shared.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -45,6 +47,12 @@ public class GlobalExceptionHandler {
         if (ex instanceof InvalidCredentialsException) {
             return HttpStatus.UNAUTHORIZED;
         }
+        if (ex instanceof ForbiddenException) {
+            return HttpStatus.FORBIDDEN;
+        }
+        if (ex instanceof NotFoundException) {
+            return HttpStatus.NOT_FOUND;
+        }
         if (ex instanceof InsufficientStockException
                 || ex instanceof PurchaseLimitExceededException
                 || ex instanceof LaunchNotOpenException
@@ -59,6 +67,12 @@ public class GlobalExceptionHandler {
     private static String typeFor(DomainException ex) {
         if (ex instanceof InvalidCredentialsException) {
             return "invalid-credentials";
+        }
+        if (ex instanceof ForbiddenException) {
+            return "forbidden";
+        }
+        if (ex instanceof NotFoundException) {
+            return "not-found";
         }
         if (ex instanceof InsufficientStockException) {
             return "stock-insufficient";
