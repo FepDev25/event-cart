@@ -35,3 +35,6 @@ eventcart:
   checkout:
     latency: 50ms
     timeout: 500ms
+  rate-limit:
+    capacity: 100
+    window: 1m
