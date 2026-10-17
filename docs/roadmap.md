@@ -153,6 +153,7 @@ Tests unitarios verdes que cubren: transiciones válidas/ inválidas, cálculo d
 - [x] **OpenAPI**: springdoc-openapi 3.x (`/swagger-ui`).
 - [x] **Rate limit**: básico en memoria (IP/usuario) sobre reserva y checkout, configurable.
 - Referencia de esquema: [`V1__core_schema.sql`](../src/main/resources/db/migration/V1__core_schema.sql) (tablas `orders`, `idempotency_keys`, `buyer_launch_usage` ya definidas).
+- Referencia de diseño: [`docs/m2-api-design.md`](../docs/m2-api-design.md) (contrato REST, persistencia y flujos).
 
 ### Tareas
 - [ ] Endpoints de organizador: crear, editar, publicar/programar, cancelar lanzamiento.
