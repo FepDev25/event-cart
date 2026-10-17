@@ -8,7 +8,9 @@ import com.eventcart.launch.OutsideSaleWindowException;
 import com.eventcart.reservation.PurchaseLimitExceededException;
 import com.eventcart.shared.DomainException;
 import com.eventcart.shared.ForbiddenException;
+import com.eventcart.shared.IdempotencyConflictException;
 import com.eventcart.shared.InvalidStateTransitionException;
+import com.eventcart.shared.MissingIdempotencyKeyException;
 import com.eventcart.shared.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -47,6 +49,9 @@ public class GlobalExceptionHandler {
         if (ex instanceof InvalidCredentialsException) {
             return HttpStatus.UNAUTHORIZED;
         }
+        if (ex instanceof MissingIdempotencyKeyException) {
+            return HttpStatus.BAD_REQUEST;
+        }
         if (ex instanceof ForbiddenException) {
             return HttpStatus.FORBIDDEN;
         }
@@ -58,6 +63,7 @@ public class GlobalExceptionHandler {
                 || ex instanceof LaunchNotOpenException
                 || ex instanceof OutsideSaleWindowException
                 || ex instanceof InvalidStateTransitionException
+                || ex instanceof IdempotencyConflictException
                 || ex instanceof EmailAlreadyUsedException) {
             return HttpStatus.CONFLICT;
         }
@@ -68,11 +74,17 @@ public class GlobalExceptionHandler {
         if (ex instanceof InvalidCredentialsException) {
             return "invalid-credentials";
         }
+        if (ex instanceof MissingIdempotencyKeyException) {
+            return "missing-idempotency-key";
+        }
         if (ex instanceof ForbiddenException) {
             return "forbidden";
         }
         if (ex instanceof NotFoundException) {
             return "not-found";
+        }
+        if (ex instanceof IdempotencyConflictException) {
+            return "idempotency-conflict";
         }
         if (ex instanceof InsufficientStockException) {
             return "stock-insufficient";

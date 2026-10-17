@@ -1,11 +1,9 @@
 package com.eventcart.identity.service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import com.eventcart.shared.Hashes;
+
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.HexFormat;
 
 /**
  * Generación y hash de tokens de sesión opacos. Solo se persiste el hash.
@@ -26,11 +24,6 @@ public final class Tokens {
     }
 
     public static String hash(String token) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            return HexFormat.of().formatHex(digest.digest(token.getBytes(StandardCharsets.UTF_8)));
-        } catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException("SHA-256 not available", ex);
-        }
+        return Hashes.sha256(token);
     }
 }
