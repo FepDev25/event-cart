@@ -63,6 +63,16 @@ public class Order {
                 unitPrice.multiply(quantity), OrderStatus.PENDING, null, null, now, now);
     }
 
+    /**
+     * Rehidrata un pedido ya persistido preservando {@code id}, estado y snapshot comercial.
+     */
+    public static Order reconstitute(UUID id, UUID reservationId, UUID launchId, UUID buyerId, int quantity,
+                                     Money unitPrice, Money totalAmount, OrderStatus status, String paymentResult,
+                                     String failureReason, Instant createdAt, Instant updatedAt) {
+        return new Order(id, reservationId, launchId, buyerId, quantity, unitPrice, totalAmount, status,
+                paymentResult, failureReason, createdAt, updatedAt);
+    }
+
     public void confirm(String paymentResult, Instant now) {
         requirePending("confirm");
         this.status = OrderStatus.CONFIRMED;
