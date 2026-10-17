@@ -42,7 +42,7 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 |------|--------|--------|--------------------|
 | M0 | Scaffolding y fundaciones | `[x]` | Resuelta |
 | M1 | Dominio + diseño de base de datos | `[x]` | Resuelta |
-| M2 | Backend: reserva atómica + checkout simulado | `[~]` | Resuelta |
+| M2 | Backend: reserva atómica + checkout simulado | `[x]` | Resuelta |
 | M3 | Outbox transaccional + Kafka | `[ ]` | Sí |
 | M4 | Caducidad, reconciliación y fallos | `[ ]` | Sí |
 | M5 | Diseño UI/UX (previo al frontend) | `[ ]` | Sí |
@@ -156,18 +156,18 @@ Tests unitarios verdes que cubren: transiciones válidas/ inválidas, cálculo d
 - Referencia de diseño: [`docs/m2-api-design.md`](../docs/m2-api-design.md) (contrato REST, persistencia y flujos).
 
 ### Tareas
-- [ ] Endpoints de organizador: crear, editar, publicar/programar, cancelar lanzamiento.
-- [ ] Endpoints de comprador: ver lanzamiento publicado, solicitar reserva, consultar estado.
-- [ ] Transacción de reserva con bloqueo/actualización condicional; reintento seguro.
-- [ ] Idempotencia de reserva y de checkout.
-- [ ] Límite por comprador (si se habilitó en M1) aplicado atómicamente.
-- [ ] Autorización servidor de apertura/cierre (hora + zona).
-- [ ] Checkout simulado con resultados aprobado/rechazado/fallo-timeout.
-- [ ] Cambio de estado `RESERVED -> CONFIRMED | RELEASED` en la misma frontera transaccional del stock.
-- [ ] Validación de cantidades, estados y fechas en servidor; rate limit básico.
-- [ ] Identidad mínima: registro/login simple + emisión de token.
-- [ ] Tests de integración con Testcontainers: reserva concurrente, idempotencia, límites, autorización.
-- [ ] **Prueba de no sobreventa**: N reservas concurrentes sobre stock finito → exactamente `stock` confirmadas.
+- [x] Endpoints de organizador: crear, editar, publicar/programar, cancelar lanzamiento.
+- [x] Endpoints de comprador: ver lanzamiento publicado, solicitar reserva, consultar estado.
+- [x] Transacción de reserva con bloqueo/actualización condicional; reintento seguro.
+- [x] Idempotencia de reserva y de checkout.
+- [x] Límite por comprador (si se habilitó en M1) aplicado atómicamente.
+- [x] Autorización servidor de apertura/cierre (hora + zona).
+- [x] Checkout simulado con resultados aprobado/rechazado/fallo-timeout.
+- [x] Cambio de estado `RESERVED -> CONFIRMED | RELEASED` en la misma frontera transaccional del stock.
+- [x] Validación de cantidades, estados y fechas en servidor; rate limit básico.
+- [x] Identidad mínima: registro/login simple + emisión de token.
+- [x] Tests de integración con Testcontainers: reserva concurrente, idempotencia, límites, autorización.
+- [x] **Prueba de no sobreventa**: N reservas concurrentes sobre stock finito → exactamente 5/20 en el escenario de prueba.
 
 ### Criterio de aceptación
 Tests de integración demuestran: cero sobreventa, sin reservas duplicadas por reintento, invariante contable intacto, rechazos claros por stock/estado/fecha, y que la ruta de error **no** confirma pedidos ni libera/pierde stock indebidamente.
