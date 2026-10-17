@@ -40,7 +40,7 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 
 | Hito | Nombre | Estado | Fase de decisiones |
 |------|--------|--------|--------------------|
-| M0 | Scaffolding y fundaciones | `[ ]` | Sí |
+| M0 | Scaffolding y fundaciones | `[~]` | Resuelta |
 | M1 | Dominio + diseño de base de datos | `[ ]` | Sí |
 | M2 | Backend: reserva atómica + checkout simulado | `[ ]` | Sí |
 | M3 | Outbox transaccional + Kafka | `[ ]` | Sí |
@@ -69,14 +69,15 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 
 **Objetivo:** repositorio compilable, arrancable y reproducible, con estructura de monolito modular y PostgreSQL local, sin lógica de dominio todavía.
 
-### Fase de decisiones previa (ronda de preguntas)
-- [ ] ¿Monolito **multi-módulo Maven** (api/domain/infra) o **un módulo con paquetes por bounded context**?
-- [ ] ¿Migraciones con **Flyway** o **Liquibase**?
-- [ ] ¿Cómo persistimos? **Spring Data JPA** vs **JdbcClient/JDBC** explícito (impacta el control fino de concurrencia).
-- [ ] ¿Usamos Lombok / MapStruct / `record`? (proponer `record` + mínimo tooling).
-- [ ] ¿Paquete base (p. ej. `com.eventcart`) y nombres de módulos?
-- [ ] ¿CI (GitHub Actions) desde M0 o se deja para M2?
-- [ ] Versión concreta de Spring Boot y Java en `pom.xml` (confirmar 25 en el entorno).
+### Fase de decisiones previa — RESUELTA
+- [x] Java: **25 LTS** (`/usr/lib/jvm/java-25-openjdk`, 25.0.4.1).
+- [x] Spring Boot: **4.1.1** (última estable, jun 2026).
+- [x] Estructura: **módulo Maven único + paquetes por bounded context** (`launch`, `reservation`, `checkout`, `order`, `eventing`, `identity`, `shared`).
+- [x] Migraciones: **Flyway** (migraciones SQL explícitas).
+- [x] Persistencia: **Spring Data JPA + SQL nativo en rutas críticas** (reserva/stock).
+- [x] Tooling: **records + Lombok + MapStruct**.
+- [x] Paquete/groupId base: **`com.eventcart`**.
+- [x] CI: **GitHub Actions mínimo en M0** (build + test).
 
 ### Tareas
 - [ ] `git init` ya existe → primer `.gitignore` (Java, Node, IDE, `.env`).
