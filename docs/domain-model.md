@@ -17,7 +17,7 @@ Kafka (M3) solo transportará hechos.
 
 ## Value objects
 
-- **Money**: `amount numeric(12,2)` + `currency char(3)` ISO-4217. `BigDecimal` en Java.
+- **Money**: `amount numeric(12,2)` + `currency varchar(3)` ISO-4217. `BigDecimal` en Java.
 - **LaunchStatus**: `DRAFT → SCHEDULED → OPEN → CLOSED` (+ `CANCELLED` en cualquier punto anterior a terminal).
 - **ReservationStatus**: `RESERVED → CONFIRMED | RELEASED | EXPIRED`.
 - **OrderStatus**: `PENDING → CONFIRMED | FAILED`.
