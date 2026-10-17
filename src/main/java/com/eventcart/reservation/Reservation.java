@@ -61,6 +61,16 @@ public class Reservation {
                 unitPrice.multiply(quantity), ReservationStatus.RESERVED, now.plus(ttl), now, now);
     }
 
+    /**
+     * Rehidrata una reserva ya persistida preservando {@code id}, estado y snapshot comercial.
+     */
+    public static Reservation reconstitute(UUID id, UUID launchId, UUID buyerId, int quantity, Money unitPrice,
+                                           Money totalAmount, ReservationStatus status, Instant expiresAt,
+                                           Instant createdAt, Instant updatedAt) {
+        return new Reservation(id, launchId, buyerId, quantity, unitPrice, totalAmount, status, expiresAt, createdAt,
+                updatedAt);
+    }
+
     public void confirm(Instant now) {
         requireReserved("confirm");
         if (!now.isBefore(expiresAt)) {
