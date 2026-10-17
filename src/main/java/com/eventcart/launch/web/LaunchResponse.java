@@ -16,6 +16,8 @@ public record LaunchResponse(
         String currency,
         int totalStock,
         int availableUnits,
+        int reservedUnits,
+        int confirmedUnits,
         LaunchStatus status,
         Instant opensAt,
         Instant closesAt,

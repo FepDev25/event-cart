@@ -31,4 +31,14 @@ public interface BuyerLaunchUsageJpaRepository extends JpaRepository<BuyerLaunch
             WHERE buyer_id = :buyerId AND launch_id = :launchId
             """, nativeQuery = true)
     int release(@Param("buyerId") UUID buyerId, @Param("launchId") UUID launchId, @Param("qty") int qty);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = """
+            UPDATE buyer_launch_usage
+            SET reserved_units  = GREATEST(reserved_units - :qty, 0),
+                confirmed_units = confirmed_units + :qty,
+                updated_at      = now()
+            WHERE buyer_id = :buyerId AND launch_id = :launchId
+            """, nativeQuery = true)
+    int confirm(@Param("buyerId") UUID buyerId, @Param("launchId") UUID launchId, @Param("qty") int qty);
 }

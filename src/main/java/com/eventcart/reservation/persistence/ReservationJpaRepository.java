@@ -22,4 +22,15 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationEntit
             WHERE id = :id AND status = 'RESERVED'
             """, nativeQuery = true)
     int releaseIfReserved(@Param("id") UUID id);
+
+    /**
+     * Confirma la reserva solo si sigue RESERVED (evita confirmar reservas caducadas/liberadas).
+     */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = """
+            UPDATE reservations
+            SET status = 'CONFIRMED', updated_at = now()
+            WHERE id = :id AND status = 'RESERVED'
+            """, nativeQuery = true)
+    int confirmIfReserved(@Param("id") UUID id);
 }

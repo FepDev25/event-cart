@@ -39,4 +39,17 @@ public interface LaunchJpaRepository extends JpaRepository<LaunchEntity, UUID> {
             WHERE id = :launchId AND reserved_units >= :qty
             """, nativeQuery = true)
     int releaseUnits(@Param("launchId") UUID launchId, @Param("qty") int qty);
+
+    /**
+     * Mueve unidades de reservado a confirmado (confirmación de compra).
+     */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = """
+            UPDATE launches
+            SET reserved_units  = reserved_units  - :qty,
+                confirmed_units = confirmed_units + :qty,
+                updated_at      = now()
+            WHERE id = :launchId AND reserved_units >= :qty
+            """, nativeQuery = true)
+    int confirmUnits(@Param("launchId") UUID launchId, @Param("qty") int qty);
 }
