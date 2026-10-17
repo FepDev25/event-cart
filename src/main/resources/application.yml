@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: eventcart
+
+  datasource:
+    url: jdbc:postgresql://${EVENTCART_DB_HOST:localhost}:${EVENTCART_DB_PORT:5439}/${EVENTCART_DB_NAME:eventcart}
+    username: ${EVENTCART_DB_USER:eventcart}
+    password: ${EVENTCART_DB_PASSWORD:eventcart}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
