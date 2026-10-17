@@ -2,6 +2,10 @@ package com.eventcart.checkout.service;
 
 import com.eventcart.config.CheckoutProperties;
 import com.eventcart.config.IdempotencyProperties;
+import com.eventcart.eventing.contract.EventType;
+import com.eventcart.eventing.contract.OrderConfirmedPayload;
+import com.eventcart.eventing.contract.PaymentSimulationFailedPayload;
+import com.eventcart.eventing.outbox.OutboxWriter;
 import com.eventcart.launch.persistence.LaunchJpaRepository;
 import com.eventcart.order.Order;
 import com.eventcart.order.OrderStatus;
@@ -51,6 +55,7 @@ public class CheckoutService {
     private final OrderMapper orderMapper;
     private final PaymentSimulator paymentSimulator;
     private final CheckoutProperties checkoutProperties;
+    private final OutboxWriter outbox;
     private final Clock clock;
     private final TransactionTemplate tx;
 
@@ -58,7 +63,8 @@ public class CheckoutService {
                            ReservationJpaRepository reservations, BuyerLaunchUsageJpaRepository buyerUsage,
                            OrderJpaRepository orders, IdempotencyKeyJpaRepository idempotency,
                            IdempotencyProperties idempotencyProperties, OrderMapper orderMapper,
-                           PaymentSimulator paymentSimulator, CheckoutProperties checkoutProperties, Clock clock) {
+                           PaymentSimulator paymentSimulator, CheckoutProperties checkoutProperties,
+                           OutboxWriter outbox, Clock clock) {
         this.launches = launches;
         this.reservations = reservations;
         this.buyerUsage = buyerUsage;
@@ -68,6 +74,7 @@ public class CheckoutService {
         this.orderMapper = orderMapper;
         this.paymentSimulator = paymentSimulator;
         this.checkoutProperties = checkoutProperties;
+        this.outbox = outbox;
         this.clock = clock;
         this.tx = new TransactionTemplate(transactionManager);
     }
@@ -146,6 +153,9 @@ public class CheckoutService {
                     launches.confirmUnits(reservation.getLaunchId(), reservation.getQuantity());
                     buyerUsage.confirm(order.getBuyerId(), reservation.getLaunchId(), reservation.getQuantity());
                     orders.confirmIfPending(orderId, "APPROVED");
+                    outbox.append(orderId, EventType.ORDER_CONFIRMED, new OrderConfirmedPayload(
+                            orderId, order.getReservationId(), order.getLaunchId(), order.getBuyerId(),
+                            order.getQuantity(), order.getTotalAmount(), order.getCurrency()));
                 }
             }
             case DECLINED -> {
@@ -154,6 +164,9 @@ public class CheckoutService {
                     launches.releaseUnits(reservation.getLaunchId(), reservation.getQuantity());
                     buyerUsage.release(order.getBuyerId(), reservation.getLaunchId(), reservation.getQuantity());
                 }
+                outbox.append(orderId, EventType.PAYMENT_SIMULATION_FAILED, new PaymentSimulationFailedPayload(
+                        orderId, order.getReservationId(), order.getLaunchId(), order.getBuyerId(),
+                        order.getQuantity(), "DECLINED"));
             }
             case TIMEOUT -> {
                 // Resultado indeterminado: el pedido queda PENDING para reconciliación (M4).

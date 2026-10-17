@@ -1,6 +1,10 @@
 package com.eventcart.reservation.service;
 
 import com.eventcart.config.IdempotencyProperties;
+import com.eventcart.eventing.contract.EventType;
+import com.eventcart.eventing.contract.ReservationCreatedPayload;
+import com.eventcart.eventing.contract.ReservationReleasedPayload;
+import com.eventcart.eventing.outbox.OutboxWriter;
 import com.eventcart.launch.InsufficientStockException;
 import com.eventcart.launch.LaunchNotOpenException;
 import com.eventcart.launch.LaunchStatus;
@@ -46,18 +50,20 @@ public class ReservationApplicationService {
     private final IdempotencyKeyJpaRepository idempotency;
     private final ReservationMapper mapper;
     private final IdempotencyProperties idempotencyProperties;
+    private final OutboxWriter outbox;
     private final Clock clock;
 
     public ReservationApplicationService(LaunchJpaRepository launches, ReservationJpaRepository reservations,
                                          BuyerLaunchUsageJpaRepository buyerUsage,
                                          IdempotencyKeyJpaRepository idempotency, ReservationMapper mapper,
-                                         IdempotencyProperties idempotencyProperties, Clock clock) {
+                                         IdempotencyProperties idempotencyProperties, OutboxWriter outbox, Clock clock) {
         this.launches = launches;
         this.reservations = reservations;
         this.buyerUsage = buyerUsage;
         this.idempotency = idempotency;
         this.mapper = mapper;
         this.idempotencyProperties = idempotencyProperties;
+        this.outbox = outbox;
         this.clock = clock;
     }
 
@@ -102,6 +108,10 @@ public class ReservationApplicationService {
         ReservationEntity entity = mapper.toEntity(reservation);
         reservations.save(entity);
 
+        outbox.append(entity.getId(), EventType.RESERVATION_CREATED, new ReservationCreatedPayload(
+                entity.getId(), entity.getLaunchId(), entity.getBuyerId(), entity.getQuantity(),
+                entity.getUnitPrice(), entity.getCurrency(), entity.getTotalAmount(), entity.getExpiresAt()));
+
         idempotency.complete(IDEMPOTENCY_SCOPE, idempotencyKey, entity.getId(), 201, entity.getId().toString());
         return mapper.toDomain(entity);
     }
@@ -119,6 +129,8 @@ public class ReservationApplicationService {
         }
         launches.releaseUnits(reservation.getLaunchId(), reservation.getQuantity());
         buyerUsage.release(buyerId, reservation.getLaunchId(), reservation.getQuantity());
+        outbox.append(reservationId, EventType.RESERVATION_RELEASED, new ReservationReleasedPayload(
+                reservationId, reservation.getLaunchId(), reservation.getBuyerId(), reservation.getQuantity()));
         return mapper.toDomain(reservations.findById(reservationId).orElseThrow());
     }
 
