@@ -41,7 +41,7 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 | Hito | Nombre | Estado | Fase de decisiones |
 |------|--------|--------|--------------------|
 | M0 | Scaffolding y fundaciones | `[x]` | Resuelta |
-| M1 | Dominio + diseño de base de datos | `[ ]` | Sí |
+| M1 | Dominio + diseño de base de datos | `[~]` | Resuelta |
 | M2 | Backend: reserva atómica + checkout simulado | `[ ]` | Sí |
 | M3 | Outbox transaccional + Kafka | `[ ]` | Sí |
 | M4 | Caducidad, reconciliación y fallos | `[ ]` | Sí |
@@ -103,15 +103,20 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 
 **Objetivo:** modelo de dominio de inventario/reserva/pedido y esquema PostgreSQL con constraints que hagan imposible la inconsistencia, más la lógica de negocio pura testeable (sin HTTP).
 
-### Fase de decisiones previa (ronda de preguntas)
-- [ ] **Modelo contable de inventario**: columnas contables en `launch` (`available`/`reserved`/`confirmed`) vs derivar de filas de reserva/ledger. (Decide el mecanismo de no-sobreventa.)
-- [ ] **Granularidad de reserva**: una fila por unidad vs una fila con `quantity`. (Afecta límites y expiración.)
-- [ ] **Estrategia de bloqueo**: `SELECT ... FOR UPDATE` vs `UPDATE ... WHERE available >= qty RETURNING`.
-- [ ] **Estados exactos y transiciones canónicas** de `Reservation` y `Order` (incl. estado para checkout pendiente).
-- [ ] **Tipos**: `price` con `BigDecimal` + moneda; precisión/escala; `expires_at` (`timestamptz` con UTC).
-- [ ] **Límite por comprador**: ¿se habilita en V1? valor y unicidad (¿por lanzamiento + comprador?).
-- [ ] **Tiempo de reserva** por defecto y si es configurable por lanzamiento.
-- [ ] **Constraints**: `CHECK (available >= 0)`, unicidad de idempotencia, FKs y políticas de borrado.
+### Fase de decisiones previa — RESUELTA
+- [x] **Modelo contable**: contadores en `launches` (`available_units`/`reserved_units`/`confirmed_units`) con `CHECK` y `available+reserved+confirmed = total_stock`.
+- [x] **Granularidad**: una reserva por fila con `quantity`.
+- [x] **No-sobreventa/lock**: `UPDATE` condicional atómico (`WHERE ... available_units >= :qty`), sin locks explícitos.
+- [x] **Estados**: `Reservation` `RESERVED→CONFIRMED|RELEASED|EXPIRED`; ciclo de checkout en `Order` `PENDING→CONFIRMED|FAILED`.
+- [x] **Tipos**: `numeric(12,2)`/`numeric(14,2)` + `currency char(3)`; `expires_at timestamptz` (UTC).
+- [x] **Límite por comprador**: habilitado, tabla `buyer_launch_usage`, configurable por lanzamiento, default sin límite.
+- [x] **TTL de reserva**: `reservation_ttl_seconds` por lanzamiento, default 600 (10 min).
+- [x] **PKs**: `uuid` v4 generados en la app.
+- [x] **Producto**: embebido en `launches` (sin tabla `product`).
+- [x] **Ciclo de `Launch`**: `DRAFT/SCHEDULED/OPEN/CLOSED/CANCELLED`; se congelan precio/stock/schedule al `OPEN`.
+- [x] **Idempotencia**: tabla `idempotency_keys` con `UNIQUE(scope, key)`.
+- [x] **Convenciones**: enums como `text` + `CHECK`, tablas snake_case en plural, una migración `V1__core_schema.sql`.
+- Referencia: [`docs/domain-model.md`](../docs/domain-model.md) y [`V1__core_schema.sql`](../src/main/resources/db/migration/V1__core_schema.sql).
 
 ### Tareas
 - [ ] Entidades/agregados de dominio: `Launch`, `Reservation`, `Order` con máquina de estados encapsulada.
