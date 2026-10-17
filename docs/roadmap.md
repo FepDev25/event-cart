@@ -41,7 +41,7 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 | Hito | Nombre | Estado | Fase de decisiones |
 |------|--------|--------|--------------------|
 | M0 | Scaffolding y fundaciones | `[x]` | Resuelta |
-| M1 | Dominio + diseño de base de datos | `[~]` | Resuelta |
+| M1 | Dominio + diseño de base de datos | `[x]` | Resuelta |
 | M2 | Backend: reserva atómica + checkout simulado | `[ ]` | Sí |
 | M3 | Outbox transaccional + Kafka | `[ ]` | Sí |
 | M4 | Caducidad, reconciliación y fallos | `[ ]` | Sí |
@@ -119,13 +119,13 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 - Referencia: [`docs/domain-model.md`](../docs/domain-model.md) y [`V1__core_schema.sql`](../src/main/resources/db/migration/V1__core_schema.sql).
 
 ### Tareas
-- [ ] Entidades/agregados de dominio: `Launch`, `Reservation`, `Order` con máquina de estados encapsulada.
-- [ ] Migraciones de esquema (herramienta elegida en M0).
-- [ ] Constraints de integridad en DB (no negatividad, unicidad, `expires_at`).
-- [ ] Servicio de dominio para reservar (operación atómica) sin dependencia de HTTP.
-- [ ] Lógica de transiciones válidas y rechazo de transiciones inválidas.
-- [ ] Tests unitarios de reglas y máquina de estados (sin DB).
-- [ ] Documento corto `docs/domain-model.md` con estados, transiciones e invariante contable.
+- [x] Entidades/agregados de dominio: `Launch`, `Reservation`, `Order` con máquina de estados encapsulada.
+- [x] Migraciones de esquema (herramienta elegida en M0).
+- [x] Constraints de integridad en DB (no negatividad, unicidad, `expires_at`).
+- [x] Servicio de dominio para reservar (`ReservationService`) sin dependencia de HTTP; la atomicidad real se cierra en M2.
+- [x] Lógica de transiciones válidas y rechazo de transiciones inválidas.
+- [x] Tests unitarios de reglas y máquina de estados (sin DB): 42 tests.
+- [x] Documento corto `docs/domain-model.md` con estados, transiciones e invariante contable.
 
 ### Criterio de aceptación
 Tests unitarios verdes que cubren: transiciones válidas/ inválidas, cálculo de disponibilidad, y que una reserva no puede dejar `available` negativo a nivel de modelo. Esquema aplicado en Postgres vía migración reproducible.
