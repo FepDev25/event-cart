@@ -38,3 +38,6 @@ eventcart:
   rate-limit:
     capacity: 100
     window: 1m
+  outbox:
+    poll-interval: 1s
+    batch-size: 100
