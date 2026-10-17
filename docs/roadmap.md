@@ -42,7 +42,7 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 |------|--------|--------|--------------------|
 | M0 | Scaffolding y fundaciones | `[x]` | Resuelta |
 | M1 | Dominio + diseño de base de datos | `[x]` | Resuelta |
-| M2 | Backend: reserva atómica + checkout simulado | `[ ]` | Sí |
+| M2 | Backend: reserva atómica + checkout simulado | `[~]` | Resuelta |
 | M3 | Outbox transaccional + Kafka | `[ ]` | Sí |
 | M4 | Caducidad, reconciliación y fallos | `[ ]` | Sí |
 | M5 | Diseño UI/UX (previo al frontend) | `[ ]` | Sí |
@@ -140,15 +140,19 @@ Tests unitarios verdes que cubren: transiciones válidas/ inválidas, cálculo d
 
 **Objetivo:** flujo completo por HTTP: crear/publicar lanzamiento → reservar atómicamente → checkout simulado → confirmar o liberar. Validado con pruebas de concurrencia y **no sobreventa**.
 
-### Fase de decisiones previa (ronda de preguntas)
-- [ ] **Contrato REST**: rutas, verbos, recursos y versionado (`/api/v1/...`).
-- [ ] **Idempotency key**: header, formato, alcance y vencimiento; comportamiento ante clave repetida con payload incompatible.
-- [ ] **Token de sesión**: opaco en tabla `sessions` vs firmado; expiración y revocación.
-- [ ] **Checkout simulado**: cómo se decide aprobado/rechazado/timeout (seed/token determinista vs configuración por lanzamiento vs endpoint dev).
-- [ ] **Política de checkout pendiente / timeout**: qué se persiste y cómo se reconcilia (adelanto de M4).
-- [ ] **Contrato de errores**: formato de respuesta, códigos y mapeo HTTP.
-- [ ] ¿OpenAPI/Springdoc en M2?
-- [ ] **Autorización del organizador** para crear/publicar/cancelar.
+### Fase de decisiones previa — RESUELTA
+- [x] **Persistencia**: dominio puro + entidades JPA separadas + MapStruct + factories de rehidratación (id explícito).
+- [x] **Contrato REST**: `/api/v1` RESTful con acciones de estado (`POST /launches`, `/launches/{id}/publish|cancel`, `POST /launches/{id}/reservations`, `POST /reservations/{id}/checkout|cancel`, `GET /orders/{id}`).
+- [x] **Identidad**: `POST /auth/register` + `POST /auth/session`; usuario email + password (BCrypt) con rol `BUYER`/`ORGANIZER`.
+- [x] **Sesión**: token opaco persistido en `sessions` (hash + `expires_at` + revocación), `Authorization: Bearer`.
+- [x] **Autorización**: rol `ORGANIZER` para gestión; `BUYER` para reservar/checkout; aislamiento por comprador.
+- [x] **Idempotencia**: header `Idempotency-Key` obligatorio en reserva y checkout; TTL 24h; mismo payload → misma respuesta; payload distinto → 409.
+- [x] **Checkout simulado**: payment token ficticio en el request (`APPROVE`/`DECLINE`/`TIMEOUT`) + latencia configurable.
+- [x] **Checkout pendiente**: síncrono con timeout corto; resultado indeterminado → `Order` `PENDING` (202) + conciliación; ventana de gracia protege la reserva.
+- [x] **Errores**: RFC 9457 `application/problem+json` (Spring `ProblemDetail`), excepciones de dominio mapeadas a HTTP.
+- [x] **OpenAPI**: springdoc-openapi 3.x (`/swagger-ui`).
+- [x] **Rate limit**: básico en memoria (IP/usuario) sobre reserva y checkout, configurable.
+- Referencia de esquema: [`V1__core_schema.sql`](../src/main/resources/db/migration/V1__core_schema.sql) (tablas `orders`, `idempotency_keys`, `buyer_launch_usage` ya definidas).
 
 ### Tareas
 - [ ] Endpoints de organizador: crear, editar, publicar/programar, cancelar lanzamiento.
