@@ -174,3 +174,8 @@ La posible modalidad futura de **entradas generales** se reconsidera **tras** va
 ---
 
 **Principio rector:** EventCart debe demostrar con pruebas y fallos reproducibles que puede vender unidades limitadas sin sobreventa y procesar eventos de negocio correctamente en Kafka. Una experiencia usable más garantías medibles vale más que una arquitectura distribuida aparatosa.
+
+## Commits
+
+- Commits pequeños, descriptivos y autocontenidos; no mezclar cambios de distintas tareas.
+- Estilo: “ft: add feature X”, “fix: correct validation Y”, “refactor: improve Z”, “test: add unit tests for A”, “docs: update README with B”, “ci: configure GitHub Actions for C”.
