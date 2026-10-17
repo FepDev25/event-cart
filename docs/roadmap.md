@@ -40,7 +40,7 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 
 | Hito | Nombre | Estado | Fase de decisiones |
 |------|--------|--------|--------------------|
-| M0 | Scaffolding y fundaciones | `[~]` | Resuelta |
+| M0 | Scaffolding y fundaciones | `[x]` | Resuelta |
 | M1 | Dominio + diseño de base de datos | `[ ]` | Sí |
 | M2 | Backend: reserva atómica + checkout simulado | `[ ]` | Sí |
 | M3 | Outbox transaccional + Kafka | `[ ]` | Sí |
@@ -78,16 +78,17 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 - [x] Tooling: **records + Lombok + MapStruct**.
 - [x] Paquete/groupId base: **`com.eventcart`**.
 - [x] CI: **GitHub Actions mínimo en M0** (build + test).
+- [x] Puerto host de PostgreSQL: **5439** por defecto (5432 está ocupado por un Postgres del sistema); configurable con `EVENTCART_DB_PORT`.
 
 ### Tareas
-- [ ] `git init` ya existe → primer `.gitignore` (Java, Node, IDE, `.env`).
-- [ ] `pom.xml` + Maven Wrapper (`mvnw`, `mvnw.cmd`).
-- [ ] Estructura de carpetas/paquetes por bounded context: `launch`, `reservation`, `checkout`, `order`, `eventing` (placeholder), `identity`, `shared`.
-- [ ] `application.yml` + `application-local.yml` + `.env.sample` (sin secretos).
-- [ ] `docker-compose.yml` con **PostgreSQL** (sin Kafka aún).
-- [ ] Endpoint de salud y arranque en local (`/actuator/health`).
-- [ ] README raíz con requisitos y comandos de arranque.
-- [ ] `docs/` con este roadmap.
+- [x] `git init` ya existe → primer `.gitignore` (Java, Node, IDE, `.env`).
+- [x] `pom.xml` + Maven Wrapper (`mvnw`, `mvnw.cmd`).
+- [x] Estructura de carpetas/paquetes por bounded context: `launch`, `reservation`, `checkout`, `order`, `eventing` (placeholder), `identity`, `shared`.
+- [x] `application.yml` + `application-local.yml` + `.env.sample` (sin secretos).
+- [x] `docker-compose.yml` con **PostgreSQL** (sin Kafka aún).
+- [x] Endpoint de salud y arranque en local (`/actuator/health`).
+- [x] README raíz con requisitos y comandos de arranque.
+- [x] `docs/` con este roadmap.
 
 ### Criterio de aceptación
 `./mvnw spring-boot:run` arranca contra Postgres de Compose; `/actuator/health` responde `UP`; build limpio (`./mvnw verify`) sin tests aún o con un test de humo.
