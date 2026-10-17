@@ -196,6 +196,7 @@ Tests de integración demuestran: cero sobreventa, sin reservas duplicadas por r
 - [x] **Compose**: Apache Kafka en modo **KRaft** + Kafka UI.
 - [x] **Tests**: Testcontainers Kafka (outbox→publicación, redelivery, dedup, DLQ).
 - Stack verificado: `spring-boot-starter-kafka` (spring-kafka 4.1.x, kafka-clients 4.3.x).
+- Referencia de diseño: [`docs/m3-kafka-design.md`](../docs/m3-kafka-design.md) (contrato, outbox, consumidores y DLT).
 
 ### Tareas
 - [ ] Tabla `outbox` + escritura en la **misma transacción** del cambio de estado.
