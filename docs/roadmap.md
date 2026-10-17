@@ -43,7 +43,7 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 | M0 | Scaffolding y fundaciones | `[x]` | Resuelta |
 | M1 | Dominio + diseño de base de datos | `[x]` | Resuelta |
 | M2 | Backend: reserva atómica + checkout simulado | `[x]` | Resuelta |
-| M3 | Outbox transaccional + Kafka | `[~]` | Resuelta |
+| M3 | Outbox transaccional + Kafka | `[x]` | Resuelta |
 | M4 | Caducidad, reconciliación y fallos | `[ ]` | Sí |
 | M5 | Diseño UI/UX (previo al frontend) | `[ ]` | Sí |
 | M6 | Frontend comprador / organizador / laboratorio mínimo | `[ ]` | Sí |
@@ -199,17 +199,17 @@ Tests de integración demuestran: cero sobreventa, sin reservas duplicadas por r
 - Referencia de diseño: [`docs/m3-kafka-design.md`](../docs/m3-kafka-design.md) (contrato, outbox, consumidores y DLT).
 
 ### Tareas
-- [ ] Tabla `outbox` + escritura en la **misma transacción** del cambio de estado.
-- [ ] Publicador separado con registro de intentos y recuperación tras reinicio.
-- [ ] Eventos: `ReservationCreated`, `ReservationExpired`, `OrderConfirmed`, `PaymentSimulationFailed`.
-- [ ] Consumidor **Notificaciones** (efecto ficticio verificable).
-- [ ] Consumidor **Proyección de ventas** (tabla de lectura con retraso visible).
-- [ ] Consumidor **Auditoría/Operaciones**.
-- [ ] Deduplicación persistente por `event_id`/consumidor; efectos idempotentes.
-- [ ] Manejo explícito de eventos desconocidos y versiones incompatibles.
-- [ ] Reintentos con backoff → DLQ para irrecuperables.
-- [ ] Compose con Kafka (KRaft) + Kafka UI.
-- [ ] Tests con Testcontainers (Kafka): outbox→publicación, redelivery, dedup, DLQ.
+- [x] Tabla `outbox` + escritura en la **misma transacción** del cambio de estado.
+- [x] Publicador separado con registro de intentos y recuperación tras reinicio.
+- [x] Eventos: `ReservationCreated`, `ReservationReleased`, `OrderConfirmed`, `PaymentSimulationFailed`.
+- [x] Consumidor **Notificaciones** (efecto ficticio verificable).
+- [x] Consumidor **Proyección de ventas** (tabla de lectura con retraso visible).
+- [x] Consumidor **Auditoría/Operaciones**.
+- [x] Deduplicación persistente por `event_id`/consumidor; efectos idempotentes.
+- [x] Manejo explícito de eventos desconocidos y versiones incompatibles.
+- [x] Reintentos con backoff → DLQ para irrecuperables.
+- [x] Compose con Kafka (KRaft) + Kafka UI.
+- [x] Tests con Testcontainers (Kafka): outbox→publicación, redelivery, dedup, DLQ.
 
 ### Criterio de aceptación
 Un cambio de estado confirmado aparece en Kafka en un instante acotado; reentregar el mismo evento **no** duplica efectos; un evento inválido termina en DLQ; reiniciar el publicador tras un fallo publica lo pendiente **sin** duplicar efectos visibles. Se documenta explícitamente que la semántica es **at-least-once**.
