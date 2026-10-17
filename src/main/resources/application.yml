@@ -32,3 +32,6 @@ eventcart:
     bcrypt-strength: 10
   idempotency:
     ttl: 24h
+  checkout:
+    latency: 50ms
+    timeout: 500ms
