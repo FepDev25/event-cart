@@ -39,8 +39,9 @@ public class Launch {
     private Instant updatedAt;
 
     private Launch(UUID id, String title, String description, String productName, String productRef,
-                   Money unitPrice, int totalStock, Instant opensAt, Instant closesAt, Duration reservationTtl,
-                   Integer perBuyerLimit, UUID sellerId, Instant createdAt) {
+                   Money unitPrice, int totalStock, int availableUnits, int reservedUnits, int confirmedUnits,
+                   LaunchStatus status, Instant opensAt, Instant closesAt, Duration reservationTtl,
+                   Integer perBuyerLimit, UUID sellerId, Instant createdAt, Instant updatedAt) {
         this.id = Objects.requireNonNull(id, "id");
         this.title = requireNonBlank(title, "title");
         this.description = description;
@@ -51,17 +52,17 @@ public class Launch {
             throw new IllegalArgumentException("totalStock must be >= 0");
         }
         this.totalStock = totalStock;
-        this.availableUnits = totalStock;
-        this.reservedUnits = 0;
-        this.confirmedUnits = 0;
-        this.status = LaunchStatus.DRAFT;
+        this.availableUnits = availableUnits;
+        this.reservedUnits = reservedUnits;
+        this.confirmedUnits = confirmedUnits;
+        this.status = Objects.requireNonNull(status, "status");
         this.opensAt = Objects.requireNonNull(opensAt, "opensAt");
         this.closesAt = requireAfter(opensAt, closesAt);
         this.reservationTtl = requirePositive(reservationTtl, "reservationTtl");
         this.perBuyerLimit = requirePositiveOrNull(perBuyerLimit);
         this.sellerId = Objects.requireNonNull(sellerId, "sellerId");
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
-        this.updatedAt = createdAt;
+        this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt");
         assertInvariant();
     }
 
@@ -69,7 +70,21 @@ public class Launch {
                                 Money unitPrice, int totalStock, Instant opensAt, Instant closesAt,
                                 Duration reservationTtl, Integer perBuyerLimit, UUID sellerId, Instant createdAt) {
         return new Launch(UUID.randomUUID(), title, description, productName, productRef, unitPrice, totalStock,
-                opensAt, closesAt, reservationTtl, perBuyerLimit, sellerId, createdAt);
+                totalStock, 0, 0, LaunchStatus.DRAFT, opensAt, closesAt, reservationTtl, perBuyerLimit, sellerId,
+                createdAt, createdAt);
+    }
+
+    /**
+     * Rehidrata un lanzamiento ya persistido preservando {@code id}, contadores y estado.
+     */
+    public static Launch reconstitute(UUID id, String title, String description, String productName, String productRef,
+                                      Money unitPrice, int totalStock, int availableUnits, int reservedUnits,
+                                      int confirmedUnits, LaunchStatus status, Instant opensAt, Instant closesAt,
+                                      Duration reservationTtl, Integer perBuyerLimit, UUID sellerId, Instant createdAt,
+                                      Instant updatedAt) {
+        return new Launch(id, title, description, productName, productRef, unitPrice, totalStock, availableUnits,
+                reservedUnits, confirmedUnits, status, opensAt, closesAt, reservationTtl, perBuyerLimit, sellerId,
+                createdAt, updatedAt);
     }
 
     // --- ciclo de vida -------------------------------------------------------
