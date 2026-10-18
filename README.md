@@ -7,7 +7,7 @@ eventos repetidos y fallos parciales.
 
 Objetivo doble: portafolio y aprendizaje aplicado de **Apache Kafka (Nivel 2)**.
 
-> **Progreso:** M0 (scaffolding y fundaciones) en curso. Ver [`docs/roadmap.md`](docs/roadmap.md) para el checklist de hitos.
+> **Progreso:** M3 (outbox transaccional + Kafka) completado. Siguiente: M4 (caducidad, reconciliación y fallos). Ver [`docs/roadmap.md`](docs/roadmap.md) para el checklist de hitos.
 
 ## Stack
 
