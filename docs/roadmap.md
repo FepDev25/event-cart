@@ -232,9 +232,9 @@ Un cambio de estado confirmado aparece en Kafka en un instante acotado; reentreg
 - [x] **Backoff/reintentos DLT**: **backoff configurable** por properties (base 500ms×3 hoy) y **reproceso desde DLT manual/controlado** (script), apoyado en la deduplicación por `event_id`.
 
 ### Tareas
-- [ ] Job de expiración basado en `expires_at` (no depende de Kafka).
-- [ ] Liberación de stock **una sola vez** bajo carrera con confirmación.
-- [ ] Emisión de `ReservationExpired` vía outbox.
+- [x] Job de expiración basado en `expires_at` en **proceso worker** (perfil `worker`, sin web); no depende de Kafka.
+- [x] Emisión de `ReservationExpired` vía outbox.
+- [ ] Liberación de stock **una sola vez** bajo carrera con confirmación (ventana de gracia).
 - [ ] Reconciliación periódica y contadores de inconsistencia.
 - [ ] Vías de inyección de fallos dev-only (sin exponer en público).
 - [ ] Tests de: expiración simultánea con checkout, reinicio durante publicación outbox, duplicados, eventos fuera de orden.
