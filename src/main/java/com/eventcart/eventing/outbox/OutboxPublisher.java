@@ -3,6 +3,7 @@ package com.eventcart.eventing.outbox;
 import com.eventcart.config.EventingProperties;
 import com.eventcart.eventing.contract.EventType;
 import com.eventcart.eventing.contract.UnsupportedEventException;
+import com.eventcart.eventing.metrics.EventingMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -26,13 +27,15 @@ public class OutboxPublisher {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final EventingProperties properties;
     private final Clock clock;
+    private final EventingMetrics metrics;
 
     public OutboxPublisher(OutboxJpaRepository outbox, KafkaTemplate<String, String> kafkaTemplate,
-                           EventingProperties properties, Clock clock) {
+                           EventingProperties properties, Clock clock, EventingMetrics metrics) {
         this.outbox = outbox;
         this.kafkaTemplate = kafkaTemplate;
         this.properties = properties;
         this.clock = clock;
+        this.metrics = metrics;
     }
 
     @Scheduled(fixedDelayString = "${eventcart.outbox.poll-interval:1s}")
@@ -51,10 +54,12 @@ public class OutboxPublisher {
             row.setPublishedAt(clock.instant());
             row.setAttempts(row.getAttempts() + 1);
             outbox.save(row);
+            metrics.outboxPublished();
             log.debug("Outbox published id={} type={} topic={}", row.getId(), row.getEventType(), topic);
         } catch (Exception ex) {
             row.setAttempts(row.getAttempts() + 1);
             outbox.save(row);
+            metrics.outboxPublishFailed();
             log.warn("Outbox publish failed id={} type={} attempts={}", row.getId(), row.getEventType(),
                     row.getAttempts(), ex);
         }

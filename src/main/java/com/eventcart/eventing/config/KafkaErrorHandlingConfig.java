@@ -1,6 +1,7 @@
 package com.eventcart.eventing.config;
 
 import com.eventcart.eventing.contract.Topics;
+import com.eventcart.eventing.metrics.EventingMetrics;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,9 +21,13 @@ public class KafkaErrorHandlingConfig {
     private static final long MAX_ATTEMPTS = 3L;
 
     @Bean
-    CommonErrorHandler commonErrorHandler(KafkaTemplate<String, String> kafkaTemplate) {
+    CommonErrorHandler commonErrorHandler(KafkaTemplate<String, String> kafkaTemplate,
+                                          EventingMetrics metrics) {
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate,
-                (record, ex) -> new TopicPartition(Topics.deadLetter(record.topic()), -1));
+                (record, ex) -> {
+                    metrics.deadLettered();
+                    return new TopicPartition(Topics.deadLetter(record.topic()), -1);
+                });
         return new DefaultErrorHandler(recoverer, new FixedBackOff(RETRY_INTERVAL_MS, MAX_ATTEMPTS));
     }
 }
