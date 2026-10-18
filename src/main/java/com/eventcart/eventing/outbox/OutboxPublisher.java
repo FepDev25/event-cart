@@ -6,6 +6,7 @@ import com.eventcart.eventing.contract.UnsupportedEventException;
 import com.eventcart.eventing.metrics.EventingMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +20,7 @@ import java.util.List;
  * scheduler ⇒ sin solapamiento; las filas sin publicar se reintentan (recuperación tras reinicio).
  */
 @Component
+@Profile("!worker")
 public class OutboxPublisher {
 
     private static final Logger log = LoggerFactory.getLogger(OutboxPublisher.class);

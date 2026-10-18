@@ -3,6 +3,7 @@ package com.eventcart.eventing.consumer;
 import com.eventcart.eventing.contract.OrderConfirmedPayload;
 import com.eventcart.eventing.contract.PaymentSimulationFailedPayload;
 import com.eventcart.eventing.contract.ReservationCreatedPayload;
+import com.eventcart.eventing.contract.ReservationExpiredPayload;
 import com.eventcart.eventing.contract.ReservationReleasedPayload;
 import com.eventcart.eventing.projection.NotificationEntity;
 import com.eventcart.eventing.projection.NotificationJpaRepository;
@@ -57,6 +58,11 @@ public class NotificationsHandler {
             case "ReservationReleased" -> {
                 ReservationReleasedPayload payload = deserializer.payload(event, ReservationReleasedPayload.class);
                 save(payload.buyerId(), "ReservationReleased", "Reserva liberada");
+            }
+            case "ReservationExpired" -> {
+                ReservationExpiredPayload payload = deserializer.payload(event, ReservationExpiredPayload.class);
+                save(payload.buyerId(), "ReservationExpired",
+                        "Reserva expirada: " + payload.quantity() + " unidad(es) liberada(s)");
             }
             default -> {
                 // Tipo conocido sin notificación asociada: queda registrado como procesado.

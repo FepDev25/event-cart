@@ -9,6 +9,7 @@ import java.util.Optional;
 public enum EventType {
     RESERVATION_CREATED("ReservationCreated", 1, Topics.RESERVATION),
     RESERVATION_RELEASED("ReservationReleased", 1, Topics.RESERVATION),
+    RESERVATION_EXPIRED("ReservationExpired", 1, Topics.RESERVATION),
     ORDER_CONFIRMED("OrderConfirmed", 1, Topics.ORDER),
     PAYMENT_SIMULATION_FAILED("PaymentSimulationFailed", 1, Topics.ORDER);
 
