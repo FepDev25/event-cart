@@ -44,7 +44,7 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 | M1 | Dominio + diseño de base de datos | `[x]` | Resuelta |
 | M2 | Backend: reserva atómica + checkout simulado | `[x]` | Resuelta |
 | M3 | Outbox transaccional + Kafka | `[x]` | Resuelta |
-| M4 | Caducidad, reconciliación y fallos | `[ ]` | Sí |
+| M4 | Caducidad, reconciliación y fallos | `[ ]` | Resuelta |
 | M5 | Diseño UI/UX (previo al frontend) | `[ ]` | Sí |
 | M6 | Frontend comprador / organizador / laboratorio mínimo | `[ ]` | Sí |
 | M7 | Laboratorio de portafolio (k6, métricas, docs) | `[ ]` | Sí |
@@ -224,12 +224,12 @@ Un cambio de estado confirmado aparece en Kafka en un instante acotado; reentreg
 
 **Objetivo:** expiración correcta e idempotente de reservas, reconciliación de estados y pruebas de fallos reproducibles (reinicios, duplicados, carreras).
 
-### Fase de decisiones previa (ronda de preguntas)
-- [ ] **Mecanismo de expiración**: `@Scheduled` en la app vs proceso/worker separado; intervalo.
-- [ ] **Carrera checkout/expiración**: ventana de gracia, política si el checkout gana/pierde, y estado resultante.
-- [ ] **Reconciliación** de reservas huérfanas/caducadas pendientes de liberación.
-- [ ] **Herramientas de inyección de fallos** (solo dev/laboratorio): endpoints o flags para checkout lento/rechazado, parar/`reproducir` mensajes.
-- [ ] **Backoff/reintentos** definitivos y política de reproceso desde DLQ.
+### Fase de decisiones previa — RESUELTA
+- [x] **Mecanismo de expiración**: **proceso/worker separado** (mismo jar, perfil Spring dedicado con `web-application-type=none`); job `@Scheduled` con claim atómico (`UPDATE ... WHERE status='RESERVED' AND expires_at <= now()`) ⇒ liberación exacta una sola vez; intervalo configurable.
+- [x] **Carrera checkout/expiración**: **ventana de gracia**. El expirador respeta reservas con `Order PENDING` dentro de una ventana (p.ej. 2× timeout de checkout). Aprobado dentro de la ventana confirma; si la reserva ya expiró, el `Order` queda `FAILED` **sin** re-liberar stock (la liberación ya ocurrió exactamente una vez).
+- [x] **Reconciliación**: **job periódico único** que resuelve `Order` `PENDING` vencidos, detecta reservas `RESERVED` caducadas sin liberar y expone contadores de inconsistencia (logs/métricas).
+- [x] **Herramientas de inyección de fallos** (solo dev/laboratorio): **reusar lo existente + scripts**. El checkout ya soporta `APPROVE`/`DECLINE`/`TIMEOUT` y latencia configurable; para consumidor/publicador, scripts de Compose (`stop`/`start`). Sin endpoints nuevos.
+- [x] **Backoff/reintentos DLT**: **backoff configurable** por properties (base 500ms×3 hoy) y **reproceso desde DLT manual/controlado** (script), apoyado en la deduplicación por `event_id`.
 
 ### Tareas
 - [ ] Job de expiración basado en `expires_at` (no depende de Kafka).
