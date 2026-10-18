@@ -2,12 +2,14 @@ package com.eventcart.eventing;
 
 import com.eventcart.TestcontainersConfiguration;
 import com.eventcart.eventing.contract.Topics;
+import com.eventcart.eventing.metrics.EventingMetrics;
 import com.eventcart.eventing.outbox.OutboxEntity;
 import com.eventcart.eventing.outbox.OutboxJpaRepository;
 import com.eventcart.eventing.outbox.OutboxPublisher;
 import com.eventcart.eventing.projection.AuditLogJpaRepository;
 import com.eventcart.eventing.projection.NotificationJpaRepository;
 import com.eventcart.eventing.projection.SalesProjectionJpaRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -66,6 +68,8 @@ class EventConsumersIT {
     private KafkaTemplate<String, String> kafkaTemplate;
     @Autowired
     private KafkaContainer kafkaContainer;
+    @Autowired
+    private MeterRegistry meterRegistry;
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> json(MvcResult result) throws Exception {
@@ -243,5 +247,7 @@ class EventConsumersIT {
         Optional<String> deadLetter = pollForKey(Topics.deadLetter(Topics.RESERVATION), key, Duration.ofSeconds(25));
         assertTrue(deadLetter.isPresent(), "expected the unsupported event in the dead-letter topic");
         assertTrue(deadLetter.get().contains("\"type\":\"Bogus\""));
+        assertTrue(meterRegistry.get(EventingMetrics.DEAD_LETTERED).counter().count() >= 1.0,
+                "expected the dead-letter counter to be incremented");
     }
 }
