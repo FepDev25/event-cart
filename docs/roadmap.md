@@ -252,8 +252,7 @@ Escenarios reproducibles demuestran: reservas caducadas liberadas exactamente un
 
 **Objetivo:** dirección visual y sistema de diseño listos **antes** de escribir componentes de producto, para un resultado profesional.
 
-> **Estado:** entregables de M5 listos en `docs/design/` — **pendiente de aprobación del propietario**
-> (parte del criterio de aceptación).
+> **Estado:** entregables de M5 aprobados por el propietario; M6 construye sobre `docs/design/`.
 
 ### Fase de decisiones previa (ronda de preguntas) — RESUELTA
 - [x] **Dirección visual / tono**: *marketplace limpio y confiable*; base **neutra** + **un solo acento naranja** para escasez real; color de estado honesto (verde/ámbar/rojo).
@@ -285,22 +284,26 @@ Existe un brief + tokens + wireframes de las 3 vistas + prototipo de 1 pantalla,
 
 **Objetivo:** experiencia de compra coherente y herramientas de organizador, sobre el sistema de diseño de M5 y la API de M2–M4.
 
-### Fase de decisiones previa (ronda de preguntas)
-- [ ] **Actualizaciones en vivo**: polling vs SSE (WebSockets solo si se justifica) por vista.
-- [ ] **Gestión de sesión** en frontend (almacenamiento del token, refresh).
-- [ ] **Rutas** y navegación.
-- [ ] **i18n** (¿es/en?) y formato de moneda/fechas.
-- [ ] **UX de degradación**: reserva caducada, checkout pendiente, sistema degradado, stock agotado.
+> **Estado:** en curso — scaffold, sistema de tokens, vistas (comprador/organizador/laboratorio) y
+> flujo de compra implementados en `frontend/`. `npm run build`/`lint`/`test` verdes (11 tests) y
+> `./mvnw verify` verde (99 tests; endpoint owner-scoped `GET /api/v1/launches/mine` añadido en M6).
+
+### Fase de decisiones previa (ronda de preguntas) — RESUELTA
+- [x] **Actualizaciones en vivo**: **polling** con TanStack Query (`refetchInterval`) por vista; sin SSE/WebSockets en V1.
+- [x] **Gestión de sesión**: **Bearer token en `localStorage`** (clave `eventcart.token`); sin refresh tokens (re-login al expirar).
+- [x] **Rutas y navegación**: **react-router** con layout compartido y guardas por rol (`RequireAuth`/`RequireRole`).
+- [x] **i18n y formato**: **solo español** + `Intl` (`NumberFormat`/`DateTimeFormat`/`RelativeTimeFormat`).
+- [x] **UX de degradación**: estados explícitos para reserva caducada, checkout `PENDING`, sistema degradado, agotado, venta programada/cerrada/cancelada.
 
 ### Tareas
-- [ ] Scaffold del frontend con el stack decidido en M5.
-- [ ] Implementar tokens y componentes base.
-- [ ] Vista comprador: lanzamiento, precio, stock/estado informativo, tiempo hasta apertura, reservar, contador informativo, checkout simulado con estados claros.
-- [ ] Vista organizador: CRUD mínimo, publicación/programación, inventario, métricas de reservas/ventas, reglas de cambio tras abrir venta.
-- [ ] Vista laboratorio mínimo: estado de procesamiento, incidencias, duplicados detectados, exploración de DLQ, métricas de consistencia.
-- [ ] Actualizaciones en vivo (polling/SSE) donde aporte.
-- [ ] UX explícita para caducidad/pendiente/degradado/agotado.
-- [ ] Tests de componentes/UI para flujos críticos.
+- [x] Scaffold del frontend con el stack decidido en M5 (`frontend/`, Vite + React + TS + Tailwind 4).
+- [x] Implementar tokens y componentes base (`docs/design/tokens.css` como fuente única + primitivas UI).
+- [x] Vista comprador: listado, detalle (precio, disponibilidad informativa, apertura), reserva con `Idempotency-Key`, contador informativo y checkout simulado con estados claros.
+- [x] Vista organizador: CRUD mínimo, publicación/programación/apertura/cierre/cancelación, inventario y reglas de cambio tras abrir venta.
+- [x] Vista laboratorio mínimo: métricas de procesamiento (outbox, duplicados, DLQ, reconciliación) y enlaces a scripts/Kafka UI.
+- [x] Actualizaciones en vivo: polling donde aporta (listado, detalle, reservas, métricas).
+- [x] UX explícita para caducidad/pendiente/degradado/agotado.
+- [x] Tests de componentes/UI para flujos críticos (reserva→checkout, estados vacíos/error, contador; `npm run test`).
 
 ### Criterio de aceptación
 El recorrido comercial completo se hace desde el navegador (crear/publicar → reservar → checkout → resultado) y el organizador ve inventario y métricas; el laboratorio muestra estado de eventos/duplicados/DLQ sin sustituir herramientas de observabilidad reales.

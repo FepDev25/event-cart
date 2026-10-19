@@ -7,7 +7,7 @@ eventos repetidos y fallos parciales.
 
 Objetivo doble: portafolio y aprendizaje aplicado de **Apache Kafka (Nivel 2)**.
 
-> **Progreso:** M3 (outbox + Kafka) y M4 (caducidad, reconciliación y fallos) completados. M5 (diseño UI/UX) con entregables listos en [`docs/design/`](docs/design/README.md), pendiente de aprobación; siguiente: M6 (frontend). Ver [`docs/roadmap.md`](docs/roadmap.md).
+> **Progreso:** M3 (outbox + Kafka) y M4 (caducidad, reconciliación y fallos) completados. M5 (diseño UI/UX) aprobado. **M6 (frontend) en curso**: vistas de comprador, organizador y laboratorio en `frontend/`. Ver [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Stack
 
@@ -65,6 +65,20 @@ local. Para sobrescribir credenciales o puerto, copia `.env.sample` a `.env` y a
 Los tests de integración usan **Testcontainers** (requieren Docker en marcha). `./mvnw verify`
 compila y ejecuta toda la suite; es el mismo comando que corre en CI.
 
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev      # http://localhost:5173 (proxy /api y /actuator a :8080)
+npm run test     # tests de componentes (vitest)
+npm run lint     # oxlint
+npm run build    # tsc -b + vite build
+```
+
+El frontend consume la API en `http://localhost:8080` mediante el proxy de Vite; para apuntar a otro
+host, define `VITE_API_BASE`. El token de sesión (Bearer) se guarda en `localStorage`.
+
 ## Estructura
 
 ```
@@ -80,6 +94,7 @@ src/main/resources/
   application.yml · application-local.yml · application-worker.yml
   application-api.yml · application-consumer.yml
   db/migration/  migraciones Flyway
+frontend/         React + TypeScript (M6): vistas comprador/organizador/laboratorio
 docs/roadmap.md  checklist de hitos
 scripts/lab/     inyección de fallos (solo desarrollo)
 ```
