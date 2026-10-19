@@ -320,11 +320,19 @@ El recorrido comercial completo se hace desde el navegador (crear/publicar → r
 
 **Objetivo:** evidencia reproducible de los invariantes y de la confiabilidad de Kafka, con métricas reales medidas y documentadas.
 
-### Fase de decisiones previa (ronda de preguntas)
-- [ ] **Escenario k6**: proporción reserva/checkout, rampa de VUs, duración y datos semilla.
-- [ ] **Entorno/hardware** a documentar y límites conocidos.
-- [ ] **Experimentos de fallo** a incluir (caída de consumidor, duplicados, reinicio de publicador, DLQ).
-- [ ] **Herramientas de observabilidad mínima** ya existentes que basten (métricas/paneles).
+> **Estado:** fase de decisiones **RESUELTA**; pendiente de implementación (k6, verificación de
+> invariantes, `docs/benchmarks.md`).
+
+### Fase de decisiones previa (ronda de preguntas) — RESUELTA
+- [x] **Escenario k6**: **100 unidades iniciales / ~1.000 VUs**; rampa 30s → meseta 60s → bajada 15s (~2 min). Cada VU intenta **1 reserva** y, si la obtiene, **1 checkout**. Usuarios y lanzamiento se siembran en `setup()` (registro/login **fuera** de la ventana medida, por el coste de bcrypt). `Idempotency-Key` único por intento.
+- [x] **Mix de pagos simulados**: **70 % APPROVE / 20 % DECLINE / 10 % TIMEOUT** (ejercita confirmación, liberación de stock y el caso indeterminado → reconciliación).
+- [x] **Topología de ejecución**: **procesos separados** `api` + `worker` + `consumer` (perfiles del M4) para poder aislar consumidores/publicador en los experimentos de fallo.
+- [x] **Experimentos de fallo incluidos**: (1) reinicio de consumidores bajo carga, (2) reinicio del publicador outbox, (3) duplicados forzados/redelivery, (4) `TIMEOUT` → `PENDING` → reconciliación, (5) DLQ + reproceso manual, (6) Kafka caído y recuperado, (7) expiración concurrente con checkout.
+- [x] **Verificación de invariantes**: **script SQL** contra PostgreSQL como fuente de verdad (`available + reserved + confirmed = total`, sin negativos, cero sobreventa, caducadas liberadas una sola vez, pedidos coherentes con pagos).
+- [x] **Runtime de k6**: **Docker `grafana/k6`** con versión fijada; sin instalar k6 en el host.
+- [x] **Observabilidad**: solo lo ya existente (`/actuator/metrics`, logs, Kafka UI, vista laboratorio); **sin** Prometheus/Grafana (AGENTS.md §7/§11: no añadir observabilidad empresarial sin necesidad demostrada).
+- [x] **Entorno a documentar**: i9-13900H (20 hilos), 30 GiB RAM (~15 GiB libres), Linux 7.2.10-arch1-1, Docker 29.9.1, JDK 25; **máquina compartida** con otros contenedores → límite declarado.
+- [x] **Parámetros de fallo conocidos**: rate limit 100 req/min **por usuario** en reserva/checkout; pago simulado `latency=50ms`, `timeout=500ms`; `worker` expiración poll 5s / gracia 2s; reconciliación poll 10s.
 
 ### Tareas
 - [ ] Script k6: **100 unidades / ~1.000 clientes virtuales** como escenario ilustrativo.
