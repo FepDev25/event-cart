@@ -1,0 +1,168 @@
+/* ============================================================================
+   EventCart — Design tokens (M5)
+   Fuente única de verdad. Dirección: "marketplace limpio y confiable", SOLO CLARO.
+   Arquitectura en 3 capas: primitivo → semántico → componente.
+   Prefijo `--ec-` para no chocar con las variables de shadcn/ui en M6.
+   ============================================================================ */
+
+:root {
+  /* ---------- 1. Primitivos ---------- */
+
+  /* Neutral (slate) */
+  --ec-neutral-0: #FFFFFF;
+  --ec-neutral-50: #F8FAFC;
+  --ec-neutral-100: #F1F5F9;
+  --ec-neutral-200: #E2E8F0;
+  --ec-neutral-300: #CBD5E1;
+  --ec-neutral-400: #94A3B8;
+  --ec-neutral-500: #64748B;
+  --ec-neutral-600: #475569;
+  --ec-neutral-700: #334155;
+  --ec-neutral-800: #1E293B;
+  --ec-neutral-900: #0F172A;
+
+  /* Naranja (acento de escasez / urgencia real) */
+  --ec-orange-50: #FFF7ED;
+  --ec-orange-100: #FFEDD5;
+  --ec-orange-500: #F97316;
+  --ec-orange-600: #EA580C;
+  --ec-orange-700: #C2410C;
+
+  /* Verde (disponible / confirmado) */
+  --ec-green-50: #ECFDF5;
+  --ec-green-500: #10B981;
+  --ec-green-600: #059669;
+  --ec-green-700: #047857;
+
+  /* Ámbar (pendiente / por expirar) */
+  --ec-amber-50: #FFFBEB;
+  --ec-amber-100: #FEF3C7;
+  --ec-amber-500: #F59E0B;
+  --ec-amber-700: #B45309;
+
+  /* Rojo (error / agotado / destructivo) */
+  --ec-red-50: #FEF2F2;
+  --ec-red-100: #FEE2E2;
+  --ec-red-600: #DC2626;
+  --ec-red-700: #B91C1C;
+
+  /* ---------- 2. Semánticos ---------- */
+
+  /* Superficies y texto */
+  --ec-color-background: var(--ec-neutral-50);
+  --ec-color-surface: var(--ec-neutral-0);
+  --ec-color-surface-muted: var(--ec-neutral-100);
+  --ec-color-foreground: var(--ec-neutral-900);
+  --ec-color-muted-foreground: var(--ec-neutral-600);
+  --ec-color-border: var(--ec-neutral-200);
+  --ec-color-border-strong: var(--ec-neutral-300);
+  --ec-color-ring: var(--ec-neutral-900);
+
+  /* Acción primaria (ink neutro) */
+  --ec-color-primary: var(--ec-neutral-900);
+  --ec-color-primary-foreground: var(--ec-neutral-0);
+  --ec-color-primary-hover: var(--ec-neutral-800);
+
+  /* Acento de escasez */
+  --ec-color-accent: var(--ec-orange-600);        /* badges/labels con texto ink */
+  --ec-color-accent-foreground: var(--ec-neutral-900);
+  --ec-color-accent-strong: var(--ec-orange-700); /* botón relleno, texto blanco */
+  --ec-color-accent-strong-foreground: var(--ec-neutral-0);
+  --ec-color-accent-surface: var(--ec-orange-50);
+
+  /* Estados del stock / pedido */
+  --ec-color-available: var(--ec-green-700);
+  --ec-color-available-surface: var(--ec-green-50);
+  --ec-color-pending: var(--ec-amber-700);
+  --ec-color-pending-surface: var(--ec-amber-50);
+  --ec-color-danger: var(--ec-red-600);
+  --ec-color-danger-foreground: var(--ec-neutral-0);
+  --ec-color-danger-surface: var(--ec-red-50);
+
+  /* ---------- 3. Componentes ---------- */
+
+  --ec-button-primary-bg: var(--ec-color-primary);
+  --ec-button-primary-bg-hover: var(--ec-color-primary-hover);
+  --ec-button-primary-fg: var(--ec-color-primary-foreground);
+  --ec-button-accent-bg: var(--ec-color-accent-strong);
+  --ec-button-accent-fg: var(--ec-color-accent-strong-foreground);
+  --ec-button-radius: var(--ec-radius-md);
+  --ec-button-height: 44px;            /* objetivo táctil ≥ 44px */
+  --ec-button-padding-x: var(--ec-space-5);
+
+  --ec-card-bg: var(--ec-color-surface);
+  --ec-card-border: var(--ec-color-border);
+  --ec-card-radius: var(--ec-radius-lg);
+  --ec-card-padding: var(--ec-space-6);
+  --ec-card-shadow: var(--ec-shadow-sm);
+
+  --ec-input-bg: var(--ec-color-surface);
+  /* neutral-500 da 4.8:1 sobre blanco: cumple WCAG 1.4.11 (límites de control ≥ 3:1). */
+  --ec-input-border: var(--ec-neutral-500);
+  --ec-input-radius: var(--ec-radius-md);
+  --ec-input-height: 44px;
+
+  --ec-badge-radius: var(--ec-radius-pill);
+  --ec-badge-padding-x: var(--ec-space-3);
+  --ec-badge-padding-y: var(--ec-space-1);
+
+  /* ---------- Tipografía ---------- */
+  --ec-font-heading: 'Outfit', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --ec-font-body: 'Work Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --ec-font-mono: ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+
+  --ec-text-display-size: 2.5rem;   /* 40px */
+  --ec-text-display-lh: 1.1;
+  --ec-text-h1-size: 2rem;          /* 32px */
+  --ec-text-h1-lh: 1.2;
+  --ec-text-h2-size: 1.5rem;        /* 24px */
+  --ec-text-h2-lh: 1.25;
+  --ec-text-h3-size: 1.25rem;       /* 20px */
+  --ec-text-h3-lh: 1.3;
+  --ec-text-body-size: 1rem;        /* 16px */
+  --ec-text-body-lh: 1.6;
+  --ec-text-small-size: 0.875rem;   /* 14px */
+  --ec-text-small-lh: 1.5;
+  --ec-text-caption-size: 0.75rem;  /* 12px */
+  --ec-text-caption-lh: 1.4;
+
+  --ec-font-weight-regular: 400;
+  --ec-font-weight-medium: 500;
+  --ec-font-weight-semibold: 600;
+  --ec-font-weight-bold: 700;
+
+  /* ---------- Espaciado (ritmo 4/8) ---------- */
+  --ec-space-1: 4px;
+  --ec-space-2: 8px;
+  --ec-space-3: 12px;
+  --ec-space-4: 16px;
+  --ec-space-5: 24px;
+  --ec-space-6: 32px;
+  --ec-space-7: 48px;
+  --ec-space-8: 64px;
+
+  /* ---------- Radios ---------- */
+  --ec-radius-sm: 6px;
+  --ec-radius-md: 10px;
+  --ec-radius-lg: 14px;
+  --ec-radius-pill: 999px;
+
+  /* ---------- Sombras ---------- */
+  --ec-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.08);
+  --ec-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.10);
+
+  /* ---------- Movimiento ---------- */
+  --ec-duration-fast: 150ms;
+  --ec-duration-base: 200ms;
+  --ec-duration-slow: 300ms;
+  --ec-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Respeta la preferencia del sistema de reducir movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ec-duration-fast: 0ms;
+    --ec-duration-base: 0ms;
+    --ec-duration-slow: 0ms;
+  }
+}
