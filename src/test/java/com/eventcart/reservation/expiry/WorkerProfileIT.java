@@ -21,12 +21,14 @@ class WorkerProfileIT {
     private ApplicationContext context;
 
     @Test
-    void workerProfileRunsExpirySchedulerAndSkipsPublisher() {
+    void workerProfileRunsExpirySchedulerAndSkipsPublisherAndConsumers() {
         assertNotNull(context.getBean(ReservationExpiryScheduler.class),
                 "the expiry scheduler must be active in the worker profile");
         assertNotNull(context.getBean(ReconciliationScheduler.class),
                 "the reconciliation scheduler must be active in the worker profile");
         assertFalse(context.containsBean("outboxPublisher"),
-                "the outbox publisher belongs to the API process, not the worker");
+                "the outbox publisher runs in the API process, not the worker");
+        assertFalse(context.containsBean("notificationsConsumer"),
+                "consumers run in the dedicated consumer process, not the worker");
     }
 }
