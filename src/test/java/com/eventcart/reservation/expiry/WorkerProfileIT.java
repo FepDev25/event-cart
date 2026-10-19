@@ -1,6 +1,7 @@
 package com.eventcart.reservation.expiry;
 
 import com.eventcart.TestcontainersConfiguration;
+import com.eventcart.order.reconcile.ReconciliationScheduler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +24,8 @@ class WorkerProfileIT {
     void workerProfileRunsExpirySchedulerAndSkipsPublisher() {
         assertNotNull(context.getBean(ReservationExpiryScheduler.class),
                 "the expiry scheduler must be active in the worker profile");
+        assertNotNull(context.getBean(ReconciliationScheduler.class),
+                "the reconciliation scheduler must be active in the worker profile");
         assertFalse(context.containsBean("outboxPublisher"),
                 "the outbox publisher belongs to the API process, not the worker");
     }
