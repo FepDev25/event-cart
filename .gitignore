@@ -35,3 +35,4 @@ build/
 ### EventCart ###
 .env
 *.log
+.run/

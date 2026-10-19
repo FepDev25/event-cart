@@ -1,0 +1,6 @@
+# Proceso API (perfil `api`): servidor web + publicador de outbox, SIN consumidores.
+# Pensado para el laboratorio de fallos: permite parar/reiniciar los consumidores aparte.
+# Arranque local: ./mvnw spring-boot:run -Dspring-boot.run.profiles=api
+logging:
+  level:
+    com.eventcart: DEBUG

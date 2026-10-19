@@ -20,7 +20,7 @@ import java.util.List;
  * scheduler ⇒ sin solapamiento; las filas sin publicar se reintentan (recuperación tras reinicio).
  */
 @Component
-@Profile("!worker")
+@Profile("!worker & !consumer")
 public class OutboxPublisher {
 
     private static final Logger log = LoggerFactory.getLogger(OutboxPublisher.class);

@@ -1,0 +1,10 @@
+# Proceso consumidor (perfil `consumer`): sin servidor web, sin publicador de outbox.
+# Aísla los consumidores de Kafka para poder detenerlos/reiniciarlos durante los experimentos.
+# Arranque local: ./mvnw spring-boot:run -Dspring-boot.run.profiles=consumer
+spring:
+  main:
+    web-application-type: none
+
+logging:
+  level:
+    com.eventcart: DEBUG
