@@ -44,8 +44,8 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 | M1 | Dominio + diseño de base de datos | `[x]` | Resuelta |
 | M2 | Backend: reserva atómica + checkout simulado | `[x]` | Resuelta |
 | M3 | Outbox transaccional + Kafka | `[x]` | Resuelta |
-| M4 | Caducidad, reconciliación y fallos | `[ ]` | Resuelta |
-| M5 | Diseño UI/UX (previo al frontend) | `[ ]` | Sí |
+| M4 | Caducidad, reconciliación y fallos | `[x]` | Resuelta |
+| M5 | Diseño UI/UX (previo al frontend) | `[ ]` | Resuelta |
 | M6 | Frontend comprador / organizador / laboratorio mínimo | `[ ]` | Sí |
 | M7 | Laboratorio de portafolio (k6, métricas, docs) | `[ ]` | Sí |
 
@@ -252,22 +252,25 @@ Escenarios reproducibles demuestran: reservas caducadas liberadas exactamente un
 
 **Objetivo:** dirección visual y sistema de diseño listos **antes** de escribir componentes de producto, para un resultado profesional.
 
-### Fase de decisiones previa (ronda de preguntas)
-- [ ] **Dirección visual / tono** (marca, paleta, tipografía) acorde al dominio de "lanzamiento limitado".
-- [ ] **Stack frontend**: Vite + React + TS; **shadcn/ui + Tailwind** u otra librería; gestor de estado/datos (p. ej. TanStack Query).
-- [ ] **Design tokens**: color, tipografía, espaciado, radios, sombras, estados (éxito/error/pendiente/degradado).
-- [ ] **Wireframes** de las 3 vistas: comprador, organizador, laboratorio mínimo.
-- [ ] **Prototipo** de una pantalla representativa (p. ej. reserva con contador de caducidad informativo).
-- [ ] **Accesibilidad** (contraste, foco, navegación teclado) y responsive.
-- [ ] ¿Existe un archivo **Figma** de referencia? (si sí, indica enlace/keys).
+> **Estado:** entregables de M5 listos en `docs/design/` — **pendiente de aprobación del propietario**
+> (parte del criterio de aceptación).
+
+### Fase de decisiones previa (ronda de preguntas) — RESUELTA
+- [x] **Dirección visual / tono**: *marketplace limpio y confiable*; base **neutra** + **un solo acento naranja** para escasez real; color de estado honesto (verde/ámbar/rojo).
+- [x] **Stack frontend**: Vite + React + TS + **shadcn/ui + Tailwind** + **TanStack Query**.
+- [x] **Design tokens**: arquitectura de 3 capas (primitivo → semántico → componente); tema **solo claro**.
+- [x] **Wireframes** de las 3 vistas (lo-fi en markdown) + **1 prototipo HTML** navegable.
+- [x] **Prototipo**: reserva del comprador (contador informativo + checkout simulado con estados).
+- [x] **Accesibilidad** (WCAG 2.2 AA) y responsive (375/768/1024/1440).
+- [x] **Figma**: no; el repo es la fuente de verdad.
 
 ### Tareas
-- [ ] `docs/design/design-brief.md`: dirección, referencias y principios.
-- [ ] `docs/design/design-tokens.md` (+ variables CSS).
-- [ ] `docs/design/wireframes.md` (o imágenes en `docs/design/`).
-- [ ] Catálogo inicial de componentes (botón, input, card de lanzamiento, contador, estados, tabla organizador, panel laboratorio).
-- [ ] Prototipo navegable de 1 pantalla clave.
-- [ ] Checklist de accesibilidad por vista.
+- [x] `docs/design/design-brief.md`: dirección, referencias y principios.
+- [x] `docs/design/design-tokens.md` (+ `tokens.css` con variables CSS).
+- [x] `docs/design/wireframes.md` (3 vistas en baja fidelidad).
+- [x] Catálogo inicial de componentes: `docs/design/components.md` (entrada priorizada para M6).
+- [x] Prototipo navegable de 1 pantalla: `docs/design/prototype/reservation.html`.
+- [x] Checklist de accesibilidad por vista: `docs/design/a11y-checklist.md`.
 
 ### Criterio de aceptación
 Existe un brief + tokens + wireframes de las 3 vistas + prototipo de 1 pantalla, aprobados por el propietario, y una lista de componentes a implementar en M6.

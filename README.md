@@ -7,7 +7,7 @@ eventos repetidos y fallos parciales.
 
 Objetivo doble: portafolio y aprendizaje aplicado de **Apache Kafka (Nivel 2)**.
 
-> **Progreso:** M3 (outbox transaccional + Kafka) y M4 (caducidad, reconciliación y fallos) completados. Siguiente: M5–M6 (diseño UI/UX y frontend). Ver [`docs/roadmap.md`](docs/roadmap.md) para el checklist de hitos.
+> **Progreso:** M3 (outbox + Kafka) y M4 (caducidad, reconciliación y fallos) completados. M5 (diseño UI/UX) con entregables listos en [`docs/design/`](docs/design/README.md), pendiente de aprobación; siguiente: M6 (frontend). Ver [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Stack
 
@@ -96,5 +96,6 @@ docker compose down -v      # detener y borrar datos
 ## Documentación
 
 - [`docs/roadmap.md`](docs/roadmap.md) — hitos, decisiones y criterios de aceptación.
+- [`docs/design/`](docs/design/README.md) — diseño UI/UX (M5): brief, tokens, wireframes, prototipo, a11y.
 - [`docs/failure-lab.md`](docs/failure-lab.md) — laboratorio de fallos y scripts dev-only (`scripts/lab/`).
 - [`AGENTS.md`](AGENTS.md) — alcance, invariantes y decisiones cerradas.
