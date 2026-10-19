@@ -3,6 +3,7 @@ import { EVENTING_METRICS, getMetric } from '@/api/metrics'
 import { Alert, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/spinner'
+import { ApiError } from '@/lib/api'
 
 const METRIC_LABELS: Record<string, string> = {
   [EVENTING_METRICS.outboxPublished]: 'Eventos publicados (outbox)',
@@ -15,7 +16,7 @@ const METRIC_LABELS: Record<string, string> = {
 }
 
 function MetricCard({ name }: { name: string }) {
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['metric', name],
     queryFn: () => getMetric(name),
     refetchInterval: 5_000,
@@ -23,6 +24,7 @@ function MetricCard({ name }: { name: string }) {
   })
 
   const measurement = data?.measurements?.[0]
+  const notFound = error instanceof ApiError && error.status === 404
 
   return (
     <Card>
@@ -33,7 +35,13 @@ function MetricCard({ name }: { name: string }) {
       </CardHeader>
       <CardContent>
         {isLoading && <Skeleton className="h-9 w-24" />}
-        {isError && <p className="text-sm text-danger">No disponible</p>}
+        {isError && notFound && (
+          <>
+            <p className="font-heading text-3xl font-semibold tabular-nums">0</p>
+            <p className="text-xs text-muted-foreground">Sin registros aún</p>
+          </>
+        )}
+        {isError && !notFound && <p className="text-sm text-danger">No disponible</p>}
         {measurement && (
           <p className="font-heading text-3xl font-semibold tabular-nums">
             {Number.isInteger(measurement.value) ? measurement.value : measurement.value.toFixed(2)}
