@@ -72,6 +72,7 @@ cd frontend
 npm install
 npm run dev      # http://localhost:5173 (proxy /api y /actuator a :8080)
 npm run test     # tests de componentes (vitest)
+npm run test:e2e # recorrido completo en el navegador (Playwright; ver docs/e2e.md)
 npm run lint     # oxlint
 npm run build    # tsc -b + vite build
 ```
@@ -111,6 +112,7 @@ docker compose down -v      # detener y borrar datos
 ## Documentación
 
 - [`docs/roadmap.md`](docs/roadmap.md) — hitos, decisiones y criterios de aceptación.
+- [`docs/e2e.md`](docs/e2e.md) — pruebas end-to-end (Playwright) del recorrido comercial (M6).
 - [`docs/design/`](docs/design/README.md) — diseño UI/UX (M5): brief, tokens, wireframes, prototipo, a11y.
 - [`docs/failure-lab.md`](docs/failure-lab.md) — laboratorio de fallos y scripts dev-only (`scripts/lab/`).
 - [`AGENTS.md`](AGENTS.md) — alcance, invariantes y decisiones cerradas.

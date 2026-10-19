@@ -46,7 +46,7 @@ Demostrar con pruebas y fallos reproducibles que EventCart vende unidades limita
 | M3 | Outbox transaccional + Kafka | `[x]` | Resuelta |
 | M4 | Caducidad, reconciliación y fallos | `[x]` | Resuelta |
 | M5 | Diseño UI/UX (previo al frontend) | `[ ]` | Resuelta |
-| M6 | Frontend comprador / organizador / laboratorio mínimo | `[ ]` | Sí |
+| M6 | Frontend comprador / organizador / laboratorio mínimo | `[x]` | Sí |
 | M7 | Laboratorio de portafolio (k6, métricas, docs) | `[ ]` | Sí |
 
 ## Invariantes transversales (se validan en cada hito aplicable)
@@ -284,9 +284,10 @@ Existe un brief + tokens + wireframes de las 3 vistas + prototipo de 1 pantalla,
 
 **Objetivo:** experiencia de compra coherente y herramientas de organizador, sobre el sistema de diseño de M5 y la API de M2–M4.
 
-> **Estado:** en curso — scaffold, sistema de tokens, vistas (comprador/organizador/laboratorio) y
-> flujo de compra implementados en `frontend/`. `npm run build`/`lint`/`test` verdes (11 tests) y
-> `./mvnw verify` verde (99 tests; endpoint owner-scoped `GET /api/v1/launches/mine` añadido en M6).
+> **Estado:** completado — vistas (comprador/organizador/laboratorio) y flujo de compra en `frontend/`.
+> `npm run build`/`lint`/`test` verdes (11 tests de componentes), `npm run test:e2e` verde
+> (5 pruebas Playwright del recorrido real en navegador, ver `docs/e2e.md`) y `./mvnw verify` verde
+> (99 tests; endpoint owner-scoped `GET /api/v1/launches/mine` añadido en M6).
 
 ### Fase de decisiones previa (ronda de preguntas) — RESUELTA
 - [x] **Actualizaciones en vivo**: **polling** con TanStack Query (`refetchInterval`) por vista; sin SSE/WebSockets en V1.
@@ -304,6 +305,7 @@ Existe un brief + tokens + wireframes de las 3 vistas + prototipo de 1 pantalla,
 - [x] Actualizaciones en vivo: polling donde aporta (listado, detalle, reservas, métricas).
 - [x] UX explícita para caducidad/pendiente/degradado/agotado.
 - [x] Tests de componentes/UI para flujos críticos (reserva→checkout, estados vacíos/error, contador; `npm run test`).
+- [x] Pruebas **end-to-end con Playwright** del recorrido completo (organizador publica → comprador reserva → checkout aprobado/rechazado) y guardas de rol; `npm run test:e2e`, ver `docs/e2e.md`.
 
 ### Criterio de aceptación
 El recorrido comercial completo se hace desde el navegador (crear/publicar → reservar → checkout → resultado) y el organizador ve inventario y métricas; el laboratorio muestra estado de eventos/duplicados/DLQ sin sustituir herramientas de observabilidad reales.

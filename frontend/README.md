@@ -13,6 +13,7 @@ es la **fuente única de verdad** de los tokens y se importa desde `src/index.cs
 npm install
 npm run dev      # http://localhost:5173 (proxy /api y /actuator a http://localhost:8080)
 npm run test     # tests de componentes (vitest + testing-library)
+npm run test:e2e # pruebas end-to-end (Playwright; ver ../docs/e2e.md)
 npm run lint     # oxlint
 npm run build    # tsc -b + vite build
 ```
@@ -27,3 +28,9 @@ npm run build    # tsc -b + vite build
   **informativo**. Las reservas y el checkout envían `Idempotency-Key`.
 
 Para apuntar la API a otro host, define `VITE_API_BASE` (por defecto se usa el proxy de Vite).
+
+## Pruebas end-to-end
+
+`npm run test:e2e` ejecuta el recorrido comercial completo en el navegador. Requiere
+`docker compose up -d`; el `webServer` de Playwright levanta el backend (`../mvnw spring-boot:run`, JDK 25)
+y el dev server de Vite automáticamente. Detalle de escenarios y limitaciones en [`../docs/e2e.md`](../docs/e2e.md).
