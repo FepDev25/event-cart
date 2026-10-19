@@ -13,6 +13,8 @@ public interface LaunchJpaRepository extends JpaRepository<LaunchEntity, UUID> {
 
     List<LaunchEntity> findByStatusInOrderByOpensAtAsc(List<LaunchStatus> statuses);
 
+    List<LaunchEntity> findBySellerIdOrderByCreatedAtDesc(UUID sellerId);
+
     /**
      * Captura atómica de stock: reserva unidades solo si el lanzamiento está abierto, dentro de la
      * ventana y hay disponibilidad. Devuelve 0 filas si se rechaza (sin sobreventa).

@@ -95,6 +95,13 @@ public class LaunchService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<Launch> listMine(UUID sellerId) {
+        return launches.findBySellerIdOrderByCreatedAtDesc(sellerId).stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
+
     private LaunchEntity load(UUID launchId) {
         return launches.findById(launchId)
                 .orElseThrow(() -> new NotFoundException("launch not found: " + launchId));

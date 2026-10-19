@@ -72,6 +72,11 @@ public class LaunchController {
         return mapper.toResponse(launchService.cancel(principal.id(), id));
     }
 
+    @GetMapping("/mine")
+    public List<LaunchResponse> listMine(@AuthenticationPrincipal AuthenticatedUser principal) {
+        return launchService.listMine(principal.id()).stream().map(mapper::toResponse).toList();
+    }
+
     @GetMapping("/{id}")
     public LaunchResponse get(@PathVariable UUID id) {
         return mapper.toResponse(launchService.get(id));

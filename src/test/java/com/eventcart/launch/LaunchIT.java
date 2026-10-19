@@ -159,6 +159,36 @@ class LaunchIT {
         assertTrue(launches.stream().anyMatch(item -> id.equals(item.get("id"))));
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    void organizerListsOwnLaunchesIncludingDrafts() throws Exception {
+        String owner = token("ORGANIZER");
+        String other = token("ORGANIZER");
+        String mineId = (String) createLaunch(owner, 5).get("id");
+        String otherId = (String) createLaunch(other, 5).get("id");
+
+        MvcResult result = mockMvc.perform(get("/api/v1/launches/mine")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + owner))
+                .andExpect(status().isOk())
+                .andReturn();
+        List<Map<String, Object>> launches =
+                objectMapper.readValue(result.getResponse().getContentAsString(), List.class);
+        assertTrue(launches.stream().anyMatch(item -> mineId.equals(item.get("id"))));
+        assertTrue(launches.stream().noneMatch(item -> otherId.equals(item.get("id"))));
+    }
+
+    @Test
+    void buyerCannotListOwnLaunches() throws Exception {
+        String token = token("BUYER");
+        mockMvc.perform(get("/api/v1/launches/mine").header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void unauthenticatedMineIsUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/v1/launches/mine")).andExpect(status().isUnauthorized());
+    }
+
     @Test
     void getUnknownLaunchIsNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/launches/" + UUID.randomUUID())).andExpect(status().isNotFound());

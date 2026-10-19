@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/launches/*/reservations").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/launches/mine").hasRole("ORGANIZER")
                         .requestMatchers(HttpMethod.GET, "/api/v1/launches", "/api/v1/launches/**").permitAll()
                         .requestMatchers("/api/v1/launches/**").hasRole("ORGANIZER")
                         .anyRequest().authenticated())
