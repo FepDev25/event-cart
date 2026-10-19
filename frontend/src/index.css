@@ -1,0 +1,76 @@
+@import 'tailwindcss';
+
+/* Tokens de diseño: fuente única de verdad en docs/design/tokens.css (M5). */
+@import '../../docs/design/tokens.css';
+
+/* Mapea los tokens EventCart a la escala de Tailwind (genera utilidades). */
+@theme inline {
+  --font-heading: var(--ec-font-heading);
+  --font-body: var(--ec-font-body);
+  --font-mono: var(--ec-font-mono);
+
+  --color-background: var(--ec-color-background);
+  --color-foreground: var(--ec-color-foreground);
+  --color-surface: var(--ec-color-surface);
+  --color-surface-muted: var(--ec-color-surface-muted);
+  --color-muted-foreground: var(--ec-color-muted-foreground);
+  --color-border: var(--ec-color-border);
+  --color-input: var(--ec-input-border);
+  --color-ring: var(--ec-color-ring);
+
+  --color-primary: var(--ec-color-primary);
+  --color-primary-foreground: var(--ec-color-primary-foreground);
+  --color-primary-hover: var(--ec-color-primary-hover);
+
+  --color-accent: var(--ec-color-accent);
+  --color-accent-foreground: var(--ec-color-accent-foreground);
+  --color-accent-strong: var(--ec-color-accent-strong);
+  --color-accent-strong-foreground: var(--ec-color-accent-strong-foreground);
+  --color-accent-surface: var(--ec-color-accent-surface);
+
+  --color-available: var(--ec-color-available);
+  --color-available-surface: var(--ec-color-available-surface);
+  --color-pending: var(--ec-color-pending);
+  --color-pending-surface: var(--ec-color-pending-surface);
+  --color-danger: var(--ec-color-danger);
+  --color-danger-foreground: var(--ec-color-danger-foreground);
+  --color-danger-surface: var(--ec-color-danger-surface);
+
+  --radius-sm: var(--ec-radius-sm);
+  --radius-md: var(--ec-radius-md);
+  --radius-lg: var(--ec-radius-lg);
+
+  --shadow-soft: var(--ec-shadow-sm);
+  --shadow-lift: var(--ec-shadow-md);
+}
+
+@layer base {
+  body {
+    background-color: var(--ec-color-background);
+    color: var(--ec-color-foreground);
+    font-family: var(--ec-font-body);
+    font-size: var(--ec-text-body-size);
+    line-height: var(--ec-text-body-lh);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--ec-font-heading);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ec-color-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
