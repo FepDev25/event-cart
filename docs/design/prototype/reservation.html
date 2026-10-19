@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EventCart · Prototipo — Reserva del comprador</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../tokens.css" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--ec-color-background);
+      color: var(--ec-color-foreground);
+      font-family: var(--ec-font-body);
+      font-size: var(--ec-text-body-size);
+      line-height: var(--ec-text-body-lh);
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { font-family: var(--ec-font-heading); margin: 0; line-height: 1.2; }
+    h1 { font-size: var(--ec-text-h2-size); }
+    h2 { font-size: var(--ec-text-h3-size); }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--ec-space-4) var(--ec-space-5);
+      background: var(--ec-color-surface);
+      border-bottom: 1px solid var(--ec-color-border);
+    }
+    .brand { font-family: var(--ec-font-heading); font-weight: 700; letter-spacing: -0.01em; }
+    .brand span { color: var(--ec-color-accent); }
+    .topbar .who { color: var(--ec-color-muted-foreground); font-size: var(--ec-text-small-size); }
+    main {
+      max-width: 520px; margin: 0 auto; padding: var(--ec-space-5);
+      display: grid; gap: var(--ec-space-5);
+    }
+    .proto-banner {
+      display: flex; gap: var(--ec-space-3); align-items: center;
+      background: var(--ec-color-accent-surface);
+      border: 1px solid var(--ec-orange-100);
+      color: var(--ec-color-foreground);
+      border-radius: var(--ec-radius-md);
+      padding: var(--ec-space-3) var(--ec-space-4);
+      font-size: var(--ec-text-small-size);
+    }
+    .card {
+      background: var(--ec-card-bg);
+      border: 1px solid var(--ec-card-border);
+      border-radius: var(--ec-card-radius);
+      box-shadow: var(--ec-card-shadow);
+      padding: var(--ec-card-padding);
+      display: grid; gap: var(--ec-space-4);
+    }
+    .media {
+      height: 200px; border-radius: var(--ec-radius-md);
+      background:
+        radial-gradient(120% 120% at 20% 10%, var(--ec-neutral-100), var(--ec-neutral-200));
+      display: grid; place-items: center;
+      color: var(--ec-neutral-500); font-size: var(--ec-text-small-size);
+      border: 1px solid var(--ec-color-border);
+    }
+    .sku { color: var(--ec-color-muted-foreground); font-size: var(--ec-text-caption-size); text-transform: uppercase; letter-spacing: .06em; }
+    .price { font-family: var(--ec-font-heading); font-weight: 600; font-size: var(--ec-text-h2-size); }
+    .row { display: flex; align-items: center; gap: var(--ec-space-3); flex-wrap: wrap; }
+    .spread { display: flex; align-items: center; justify-content: space-between; gap: var(--ec-space-3); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: var(--ec-space-2);
+      padding: var(--ec-badge-padding-y) var(--ec-badge-padding-x);
+      border-radius: var(--ec-badge-radius);
+      font-size: var(--ec-text-caption-size); font-weight: 600;
+      letter-spacing: .02em; text-transform: uppercase;
+      border: 1px solid transparent;
+    }
+    .badge::before { content: ""; width: 8px; height: 8px; border-radius: 999px; background: currentColor; }
+    .badge.available { background: var(--ec-color-available-surface); color: var(--ec-color-available); border-color: var(--ec-green-50); }
+    .badge.pending   { background: var(--ec-color-pending-surface); color: var(--ec-color-pending); border-color: var(--ec-amber-100); }
+    .badge.accent    { background: var(--ec-color-accent-surface); color: var(--ec-orange-700); border-color: var(--ec-orange-100); }
+    .badge.danger    { background: var(--ec-color-danger-surface); color: var(--ec-color-danger); border-color: var(--ec-red-100); }
+    .badge.neutral   { background: var(--ec-color-surface-muted); color: var(--ec-color-muted-foreground); border-color: var(--ec-color-border); }
+
+    .muted { color: var(--ec-color-muted-foreground); font-size: var(--ec-text-small-size); }
+
+    .btn {
+      appearance: none; cursor: pointer;
+      font-family: var(--ec-font-body); font-size: var(--ec-text-body-size); font-weight: 600;
+      min-height: var(--ec-button-height);
+      padding: 0 var(--ec-button-padding-x);
+      border-radius: var(--ec-button-radius);
+      border: 1px solid transparent;
+      transition: background var(--ec-duration-fast) var(--ec-ease-standard),
+                  color var(--ec-duration-fast) var(--ec-ease-standard),
+                  box-shadow var(--ec-duration-fast) var(--ec-ease-standard);
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--ec-space-2);
+    }
+    .btn-primary { background: var(--ec-button-primary-bg); color: var(--ec-button-primary-fg); }
+    .btn-primary:hover { background: var(--ec-button-primary-bg-hover); }
+    .btn-accent { background: var(--ec-button-accent-bg); color: var(--ec-button-accent-fg); }
+    .btn-accent:hover { filter: brightness(0.95); }
+    .btn-outline { background: var(--ec-color-surface); color: var(--ec-color-foreground); border-color: var(--ec-input-border); }
+    .btn-outline:hover { background: var(--ec-color-surface-muted); }
+    .btn-ghost { background: transparent; color: var(--ec-color-foreground); }
+    .btn-ghost:hover { background: var(--ec-color-surface-muted); }
+    .btn-block { width: 100%; }
+    .btn[disabled] { opacity: .55; cursor: not-allowed; }
+
+    :focus-visible {
+      outline: 2px solid var(--ec-color-ring);
+      outline-offset: 2px;
+      border-radius: var(--ec-radius-sm);
+    }
+
+    .qty { display: inline-flex; align-items: center; border: 1px solid var(--ec-input-border); border-radius: var(--ec-input-radius); overflow: hidden; }
+    .qty button { width: 44px; height: 44px; border: 0; background: var(--ec-color-surface); font-size: 1.25rem; cursor: pointer; color: var(--ec-color-foreground); }
+    .qty button:hover { background: var(--ec-color-surface-muted); }
+    .qty output { min-width: 44px; text-align: center; font-weight: 600; }
+
+    .progress { height: 6px; border-radius: 999px; background: var(--ec-color-surface-muted); overflow: hidden; }
+    .progress > i { display: block; height: 100%; background: var(--ec-color-pending); transition: width var(--ec-duration-base) linear; }
+
+    .countdown { font-family: var(--ec-font-heading); font-weight: 600; font-size: var(--ec-text-h3-size); font-variant-numeric: tabular-nums; }
+
+    fieldset { border: 1px solid var(--ec-color-border); border-radius: var(--ec-radius-md); padding: var(--ec-space-3) var(--ec-space-4); margin: 0; }
+    legend { padding: 0 var(--ec-space-2); color: var(--ec-color-muted-foreground); font-size: var(--ec-text-small-size); }
+    .radio { display: flex; align-items: center; gap: var(--ec-space-3); padding: var(--ec-space-2) 0; }
+    .radio input { width: 18px; height: 18px; accent-color: var(--ec-color-primary); }
+    .radio code { font-family: var(--ec-font-mono); font-size: var(--ec-text-small-size); }
+
+    .note { background: var(--ec-color-surface-muted); border-radius: var(--ec-radius-md); padding: var(--ec-space-3) var(--ec-space-4); font-size: var(--ec-text-small-size); color: var(--ec-color-muted-foreground); }
+    .demo { border-style: dashed; }
+    .demo h2 { font-size: var(--ec-text-small-size); text-transform: uppercase; letter-spacing: .08em; color: var(--ec-color-muted-foreground); }
+    .demo .row { gap: var(--ec-space-2); }
+    .demo .btn { min-height: 36px; font-size: var(--ec-text-small-size); padding: 0 var(--ec-space-4); }
+
+    .stock-line { display: flex; align-items: baseline; gap: var(--ec-space-2); }
+    .stock-line b { font-family: var(--ec-font-heading); font-size: var(--ec-text-h3-size); }
+    table { width: 100%; border-collapse: collapse; font-size: var(--ec-text-small-size); }
+    caption { text-align: left; color: var(--ec-color-muted-foreground); padding-bottom: var(--ec-space-2); }
+    th, td { text-align: left; padding: var(--ec-space-2) var(--ec-space-3); border-bottom: 1px solid var(--ec-color-border); }
+    th { font-weight: 600; color: var(--ec-color-muted-foreground); }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Event<span>Cart</span></div>
+    <div class="who">sesión: comprador@demo</div>
+  </header>
+
+  <main>
+    <p class="proto-banner" role="note">
+      <strong>Prototipo M5</strong> — solo interfaz, sin lógica real. El tiempo y el stock son de demostración.
+    </p>
+
+    <section class="card" aria-labelledby="launch-title">
+      <div class="media" role="img" aria-label="Imagen del producto: camiseta oversize">imagen del producto</div>
+      <div>
+        <p class="sku">SKU-1 · producto físico</p>
+        <h1 id="launch-title">Camiseta Oversize “Drop 01”</h1>
+      </div>
+
+      <div class="spread">
+        <div class="price">$25.00 <span class="muted">USD</span></div>
+        <div id="status-badge" class="badge available">disponible</div>
+      </div>
+
+      <div id="live" role="status" aria-live="polite" class="muted"></div>
+
+      <div id="panel"></div>
+    </section>
+
+    <section class="card demo" aria-label="Controles de demostración">
+      <h2>Controles de demo</h2>
+      <div class="row">
+        <button class="btn btn-outline" data-jump="open">Abierto</button>
+        <button class="btn btn-outline" data-jump="reserved">Reserva activa</button>
+        <button class="btn btn-outline" data-jump="expired">Reserva expirada</button>
+        <button class="btn btn-outline" data-jump="soldout">Agotado</button>
+      </div>
+      <p class="muted">Simula estados para revisar la UI. En M6 estos vienen de la API.</p>
+    </section>
+
+    <section class="card" aria-label="Inventario informativo">
+      <h2>Estado del lanzamiento</h2>
+      <table>
+        <caption>Datos informativos del servidor (no editables aquí).</caption>
+        <thead>
+          <tr><th scope="col">Concepto</th><th scope="col">Valor</th></tr>
+        </thead>
+        <tbody id="inv"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const COUNTDOWN_SECONDS = 10 * 60;
+
+    const state = {
+      phase: 'open',       // open | reserved | checkout | confirmed | pending | failed | expired | soldout
+      qty: 1,
+      available: 100,
+      reserved: 0,
+      confirmed: 0,
+      expiresAt: null,
+      timer: null
+    };
+
+    const panel = document.getElementById('panel');
+    const badge = document.getElementById('status-badge');
+    const live = document.getElementById('live');
+    const inv = document.getElementById('inv');
+
+    const money = (n) => '$' + n.toFixed(2) + ' USD';
+
+    function setBadge(kind, text) {
+      badge.className = 'badge ' + kind;
+      badge.textContent = text;
+    }
+
+    function announce(msg) {
+      live.textContent = msg;
+    }
+
+    function clearTimer() {
+      if (state.timer) { clearInterval(state.timer); state.timer = null; }
+    }
+
+    function renderInventory() {
+      const rows = [
+        ['Disponibles', state.available],
+        ['Reservadas (activas)', state.reserved],
+        ['Confirmadas', state.confirmed]
+      ];
+      inv.innerHTML = rows.map(([k, v]) => `<tr><td>${k}</td><td>${v} unidades</td></tr>`).join('');
+    }
+
+    function render() {
+      renderInventory();
+      clearTimer();
+
+      if (state.phase === 'open') {
+        setBadge('available', 'disponible');
+        announce('');
+        panel.innerHTML = `
+          <div class="stock-line"><b>${state.available}</b><span class="muted">unidades disponibles</span></div>
+          <div class="row" style="margin-top:var(--ec-space-3)">
+            <span class="muted">Cantidad</span>
+            <div class="qty" role="group" aria-label="Selecciona cantidad">
+              <button type="button" data-qty="-1" aria-label="Menos">−</button>
+              <output aria-live="off">${state.qty}</output>
+              <button type="button" data-qty="1" aria-label="Más">+</button>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block" data-action="reserve" style="margin-top:var(--ec-space-4)">
+            Reservar ${state.qty} unidad${state.qty > 1 ? 'es' : ''}
+          </button>
+          <p class="note">Al reservar apartamos tu unidad por 10 minutos. El stock se libera si no completas la compra.</p>
+        `;
+      } else if (state.phase === 'reserved') {
+        setBadge('pending', 'reservada');
+        state.expiresAt = Date.now() + COUNTDOWN_SECONDS * 1000;
+        panel.innerHTML = `
+          <div class="spread">
+            <div class="countdown" id="countdown">10:00</div>
+            <span class="muted">para completar la compra</span>
+          </div>
+          <div class="progress" aria-hidden="true"><i id="bar" style="width:100%"></i></div>
+          <div class="spread" style="margin-top:var(--ec-space-3)">
+            <span class="muted">${state.qty} unidad · total</span>
+            <strong>${money(25 * state.qty)}</strong>
+          </div>
+          <button class="btn btn-primary btn-block" data-action="checkout" style="margin-top:var(--ec-space-4)">Completar compra</button>
+          <button class="btn btn-ghost btn-block" data-action="cancel">Cancelar reserva</button>
+          <p class="note">Este contador es informativo. La disponibilidad la confirma el servidor.</p>
+        `;
+        startCountdown();
+        announce('Reserva creada. Tienes 10 minutos para completar la compra.');
+      } else if (state.phase === 'checkout') {
+        setBadge('pending', 'pago pendiente');
+        panel.innerHTML = `
+          <h2>Pago simulado</h2>
+          <fieldset>
+            <legend>Método (token de prueba)</legend>
+            <label class="radio"><input type="radio" name="tok" value="APPROVE" checked> <code>APPROVE</code> — pago aprobado</label>
+            <label class="radio"><input type="radio" name="tok" value="DECLINE"> <code>DECLINE</code> — pago rechazado</label>
+            <label class="radio"><input type="radio" name="tok" value="TIMEOUT"> <code>TIMEOUT</code> — resultado indeterminado</label>
+          </fieldset>
+          <button class="btn btn-accent btn-block" data-action="pay" style="margin-top:var(--ec-space-4)">Pagar ${money(25 * state.qty)}</button>
+          <button class="btn btn-ghost btn-block" data-action="back">Volver</button>
+        `;
+      } else if (state.phase === 'confirmed') {
+        setBadge('available', 'confirmado');
+        panel.innerHTML = `
+          <h2>Pago aprobado</h2>
+          <p>Pedido confirmado. Te enviaremos los detalles de entrega.</p>
+          <div class="note">Pedido #EC-1042 · 1 unidad · ${money(25 * state.qty)}</div>
+          <button class="btn btn-outline btn-block" data-action="reset" style="margin-top:var(--ec-space-4)">Volver al inicio</button>
+        `;
+        announce('Pago aprobado. Pedido confirmado.');
+      } else if (state.phase === 'pending') {
+        setBadge('pending', 'pendiente');
+        panel.innerHTML = `
+          <h2>Estamos confirmando tu pago</h2>
+          <p>El resultado quedó indeterminado. Tu reserva sigue apartada mientras reconciliamos; te avisaremos.</p>
+          <div class="note">Estado del pedido: <code>PENDING</code> (202). Reconciliación posterior.</div>
+          <button class="btn btn-outline btn-block" data-action="reset" style="margin-top:var(--ec-space-4)">Volver al inicio</button>
+        `;
+        announce('Pago en proceso. Te avisaremos cuando se confirme.');
+      } else if (state.phase === 'failed') {
+        setBadge('danger', 'rechazado');
+        panel.innerHTML = `
+          <h2>Pago rechazado</h2>
+          <p>No pudimos procesar el pago y liberamos tu unidad.</p>
+          <button class="btn btn-primary btn-block" data-action="reset" style="margin-top:var(--ec-space-4)">Intentar de nuevo</button>
+        `;
+        announce('Pago rechazado. La unidad fue liberada.');
+      } else if (state.phase === 'expired') {
+        setBadge('danger', 'expirada');
+        panel.innerHTML = `
+          <h2>Tu reserva expiró</h2>
+          <p>Liberamos la unidad. Puedes reservar otra si aún hay stock.</p>
+          <button class="btn btn-primary btn-block" data-action="reset" style="margin-top:var(--ec-space-4)">Reservar de nuevo</button>
+        `;
+        announce('Tu reserva expiró y liberamos la unidad.');
+      } else if (state.phase === 'soldout') {
+        setBadge('danger', 'agotado');
+        panel.innerHTML = `
+          <h2>Se agotó el stock</h2>
+          <p>No quedan unidades disponibles para este lanzamiento.</p>
+          <button class="btn btn-outline btn-block" disabled style="margin-top:var(--ec-space-4)" aria-disabled="true">Reservar (sin stock)</button>
+        `;
+        announce('Se agotó el stock.');
+      }
+    }
+
+    function startCountdown() {
+      const el = document.getElementById('countdown');
+      const bar = document.getElementById('bar');
+      const tick = () => {
+        const left = Math.max(0, Math.round((state.expiresAt - Date.now()) / 1000));
+        const m = String(Math.floor(left / 60)).padStart(2, '0');
+        const s = String(left % 60).padStart(2, '0');
+        if (el) el.textContent = m + ':' + s;
+        if (bar) bar.style.width = (left / COUNTDOWN_SECONDS * 100) + '%';
+        if (left <= 0) {
+          clearTimer();
+          state.phase = 'expired';
+          state.reserved = Math.max(0, state.reserved - state.qty);
+          state.available += state.qty;
+          render();
+        }
+      };
+      tick();
+      state.timer = setInterval(tick, 1000);
+    }
+
+    panel.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const qtyStep = btn.dataset.qty;
+
+      if (qtyStep) {
+        state.qty = Math.min(5, Math.max(1, state.qty + Number(qtyStep)));
+        render();
+        return;
+      }
+      if (action === 'reserve') {
+        state.available -= state.qty;
+        state.reserved += state.qty;
+        state.phase = 'reserved';
+        render();
+      } else if (action === 'checkout') {
+        state.phase = 'checkout';
+        render();
+      } else if (action === 'back') {
+        state.phase = 'reserved';
+        render();
+      } else if (action === 'cancel') {
+        state.reserved -= state.qty;
+        state.available += state.qty;
+        state.phase = 'open';
+        announce('Reserva cancelada. La unidad volvió a estar disponible.');
+        render();
+      } else if (action === 'pay') {
+        const token = panel.querySelector('input[name="tok"]:checked').value;
+        if (token === 'APPROVE') {
+          state.reserved -= state.qty;
+          state.confirmed += state.qty;
+          state.phase = 'confirmed';
+        } else if (token === 'DECLINE') {
+          state.reserved -= state.qty;
+          state.available += state.qty;
+          state.phase = 'failed';
+        } else {
+          state.phase = 'pending';
+        }
+        render();
+      } else if (action === 'reset') {
+        state.phase = state.available > 0 ? 'open' : 'soldout';
+        state.qty = 1;
+        render();
+      }
+    });
+
+    document.querySelectorAll('[data-jump]').forEach((b) => {
+      b.addEventListener('click', () => { jumpTo(b.dataset.jump); location.hash = b.dataset.jump; });
+    });
+
+    function jumpTo(to) {
+      clearTimer();
+      if (to === 'open') { state.phase = 'open'; state.reserved = 0; state.available = 100; }
+      if (to === 'reserved') { state.phase = 'reserved'; state.reserved = state.qty; }
+      if (to === 'checkout') { state.phase = 'checkout'; }
+      if (to === 'pending') { state.phase = 'pending'; }
+      if (to === 'confirmed') { state.phase = 'confirmed'; }
+      if (to === 'expired') { state.phase = 'expired'; }
+      if (to === 'soldout') { state.phase = 'soldout'; state.available = 0; state.reserved = 0; state.confirmed = 100; }
+      render();
+    }
+
+    const initial = location.hash.slice(1);
+    if (['reserved', 'checkout', 'pending', 'confirmed', 'expired', 'soldout'].includes(initial)) {
+      jumpTo(initial);
+    } else {
+      render();
+    }
+  </script>
+</body>
+</html>
