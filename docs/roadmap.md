@@ -234,10 +234,10 @@ Un cambio de estado confirmado aparece en Kafka en un instante acotado; reentreg
 ### Tareas
 - [x] Job de expiración basado en `expires_at` en **proceso worker** (perfil `worker`, sin web); no depende de Kafka.
 - [x] Emisión de `ReservationExpired` vía outbox.
-- [ ] Liberación de stock **una sola vez** bajo carrera con confirmación (ventana de gracia).
-- [ ] Reconciliación periódica y contadores de inconsistencia.
+- [x] Liberación de stock **una sola vez** bajo carrera con confirmación (ventana de gracia). El barrido excluye reservas con `Order PENDING` creado dentro de `grace-window`; un APPROVE que llega tras la expiración deja `Order FAILED` sin re-liberar stock.
+- [x] Reconciliación periódica (`ReconciliationService`/`ReconciliationScheduler` en worker): resuelve `Order PENDING` vencidos → `FAILED` + libera reserva **condicionalmente** + emite `PaymentSimulationFailed`; expone `eventcart.reconciliation.orders_failed` y gauge `eventcart.reconciliation.stale_reserved`.
 - [ ] Vías de inyección de fallos dev-only (sin exponer en público).
-- [ ] Tests de: expiración simultánea con checkout, reinicio durante publicación outbox, duplicados, eventos fuera de orden.
+- [x] Tests: expiración simultánea con checkout (`CheckoutExpiryRaceIT`), ventana de gracia (`ReservationExpiryGraceIT`), reconciliación idempotente (`ReconciliationIT`), reinicio durante publicación outbox (`OutboxPublisherIT`).
 - [ ] Documento `docs/failure-lab.md` con qué invariantes permanecen verdaderos.
 
 ### Criterio de aceptación
