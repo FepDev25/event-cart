@@ -57,3 +57,8 @@ eventcart:
   expiry:
     poll-interval: 5s
     batch-size: 100
+    grace-window: 2s
+  reconciliation:
+    poll-interval: 10s
+    batch-size: 100
+    pending-timeout: 1m

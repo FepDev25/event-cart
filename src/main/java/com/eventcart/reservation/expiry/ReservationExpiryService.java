@@ -5,7 +5,6 @@ import com.eventcart.eventing.contract.EventType;
 import com.eventcart.eventing.contract.ReservationExpiredPayload;
 import com.eventcart.eventing.outbox.OutboxWriter;
 import com.eventcart.launch.persistence.LaunchJpaRepository;
-import com.eventcart.reservation.ReservationStatus;
 import com.eventcart.reservation.persistence.BuyerLaunchUsageJpaRepository;
 import com.eventcart.reservation.persistence.ReservationEntity;
 import com.eventcart.reservation.persistence.ReservationJpaRepository;
@@ -13,7 +12,6 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -67,9 +65,8 @@ public class ReservationExpiryService {
      */
     public int expireDueReservations() {
         Instant now = clock.instant();
-        List<ReservationEntity> candidates = reservations
-                .findByStatusAndExpiresAtLessThanEqualOrderByExpiresAtAsc(
-                        ReservationStatus.RESERVED, now, PageRequest.of(0, properties.batchSize()));
+        List<ReservationEntity> candidates = reservations.findExpirable(
+                now, now.minus(properties.graceWindow()), properties.batchSize());
         int expired = 0;
         for (ReservationEntity candidate : candidates) {
             UUID reservationId = candidate.getId();

@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.time.Duration;
 
 @ConfigurationProperties(prefix = "eventcart.expiry")
-public record ExpiryProperties(Duration pollInterval, int batchSize) {
+public record ExpiryProperties(Duration pollInterval, int batchSize, Duration graceWindow) {
 
     public ExpiryProperties {
         if (pollInterval == null) {
@@ -13,6 +13,9 @@ public record ExpiryProperties(Duration pollInterval, int batchSize) {
         }
         if (batchSize <= 0) {
             batchSize = 100;
+        }
+        if (graceWindow == null) {
+            graceWindow = Duration.ofSeconds(2);
         }
     }
 }

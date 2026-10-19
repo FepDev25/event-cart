@@ -1,7 +1,5 @@
 package com.eventcart.reservation.persistence;
 
-import com.eventcart.reservation.ReservationStatus;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,11 +14,42 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationEntit
     List<ReservationEntity> findByBuyerIdOrderByCreatedAtDesc(UUID buyerId);
 
     /**
-     * Candidatas a expirar: reservas aún {@code RESERVED} cuyo vencimiento ya pasó, en orden de
-     * vencimiento. La selección es solo informativa; el claim real es condicional ({@link #expireIfReserved}).
+     * Candidatas a expirar: reservas aún {@code RESERVED} cuyo vencimiento ya pasó y que <em>no</em>
+     * tienen un checkout {@code PENDING} dentro de la ventana de gracia (protege pagos en vuelo). La
+     * selección es solo informativa; el claim real es condicional ({@link #expireIfReserved}).
      */
-    List<ReservationEntity> findByStatusAndExpiresAtLessThanEqualOrderByExpiresAtAsc(
-            ReservationStatus status, Instant now, Pageable pageable);
+    @Query(value = """
+            SELECT * FROM reservations r
+            WHERE r.status = 'RESERVED'
+              AND r.expires_at <= :now
+              AND NOT EXISTS (
+                  SELECT 1 FROM orders o
+                  WHERE o.reservation_id = r.id
+                    AND o.status = 'PENDING'
+                    AND o.created_at > :graceFloor
+              )
+            ORDER BY r.expires_at
+            LIMIT :batchSize
+            """, nativeQuery = true)
+    List<ReservationEntity> findExpirable(@Param("now") Instant now, @Param("graceFloor") Instant graceFloor,
+                                          @Param("batchSize") int batchSize);
+
+    /**
+     * Reservas que ya deberían haber expirado (más antigua que la ventana de gracia y sin checkout
+     * fresco): señal de inconsistencia si el barrido de expiración va retrasado.
+     */
+    @Query(value = """
+            SELECT count(*) FROM reservations r
+            WHERE r.status = 'RESERVED'
+              AND r.expires_at <= :expiredBefore
+              AND NOT EXISTS (
+                  SELECT 1 FROM orders o
+                  WHERE o.reservation_id = r.id
+                    AND o.status = 'PENDING'
+                    AND o.created_at > :pendingSince
+              )
+            """, nativeQuery = true)
+    long countExpirable(@Param("expiredBefore") Instant expiredBefore, @Param("pendingSince") Instant pendingSince);
 
     /**
      * Marca {@code EXPIRED} solo si la reserva sigue en {@code RESERVED}. Devuelve 0 filas si ya fue
