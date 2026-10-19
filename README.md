@@ -7,7 +7,7 @@ eventos repetidos y fallos parciales.
 
 Objetivo doble: portafolio y aprendizaje aplicado de **Apache Kafka (Nivel 2)**.
 
-> **Progreso:** M3 (outbox transaccional + Kafka) completado. Siguiente: M4 (caducidad, reconciliación y fallos). Ver [`docs/roadmap.md`](docs/roadmap.md) para el checklist de hitos.
+> **Progreso:** M3 (outbox transaccional + Kafka) y M4 (caducidad, reconciliación y fallos) completados. Siguiente: M5–M6 (diseño UI/UX y frontend). Ver [`docs/roadmap.md`](docs/roadmap.md) para el checklist de hitos.
 
 ## Stack
 
@@ -45,6 +45,13 @@ Perfil de desarrollo con logs detallados:
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
+Perfiles de proceso (mismo jar): `api` (web + publicador de outbox, sin consumidores), `consumer`
+(consumidores, sin web) y `worker` (expiración y reconciliación). Útiles para el laboratorio de fallos.
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=worker
+```
+
 Las credenciales por defecto coinciden con `docker-compose.yml`. PostgreSQL se expone en el host en
 el puerto **5439** por defecto (configurable con `EVENTCART_DB_PORT`) para no chocar con un Postgres
 local. Para sobrescribir credenciales o puerto, copia `.env.sample` a `.env` y ajusta (el `.env` no se versiona).
@@ -65,14 +72,16 @@ src/main/java/com/eventcart/
   launch/       lanzamientos: creación, publicación, programación
   reservation/  captura atómica de stock, expiración, estados
   checkout/     pago simulado y resultados
-  order/        confirmación de pedidos
+  order/        confirmación de pedidos y reconciliación de pendientes
   eventing/     outbox, eventos y consumidores (M3)
   identity/     identidad mínima de comprador/organizador
   shared/       utilidades compartidas
 src/main/resources/
-  application.yml · application-local.yml
+  application.yml · application-local.yml · application-worker.yml
+  application-api.yml · application-consumer.yml
   db/migration/  migraciones Flyway
 docs/roadmap.md  checklist de hitos
+scripts/lab/     inyección de fallos (solo desarrollo)
 ```
 
 ## Comandos útiles
@@ -87,4 +96,5 @@ docker compose down -v      # detener y borrar datos
 ## Documentación
 
 - [`docs/roadmap.md`](docs/roadmap.md) — hitos, decisiones y criterios de aceptación.
+- [`docs/failure-lab.md`](docs/failure-lab.md) — laboratorio de fallos y scripts dev-only (`scripts/lab/`).
 - [`AGENTS.md`](AGENTS.md) — alcance, invariantes y decisiones cerradas.

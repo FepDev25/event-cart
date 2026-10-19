@@ -236,9 +236,9 @@ Un cambio de estado confirmado aparece en Kafka en un instante acotado; reentreg
 - [x] Emisión de `ReservationExpired` vía outbox.
 - [x] Liberación de stock **una sola vez** bajo carrera con confirmación (ventana de gracia). El barrido excluye reservas con `Order PENDING` creado dentro de `grace-window`; un APPROVE que llega tras la expiración deja `Order FAILED` sin re-liberar stock.
 - [x] Reconciliación periódica (`ReconciliationService`/`ReconciliationScheduler` en worker): resuelve `Order PENDING` vencidos → `FAILED` + libera reserva **condicionalmente** + emite `PaymentSimulationFailed`; expone `eventcart.reconciliation.orders_failed` y gauge `eventcart.reconciliation.stale_reserved`.
-- [ ] Vías de inyección de fallos dev-only (sin exponer en público).
+- [x] Vías de inyección de fallos dev-only (sin exponer en público): perfiles separables `api` (web+publisher) y `consumer` (consumidores, sin web) + scripts en `scripts/lab/` (`start/stop/restart`, `kafka-stop/start`, `inspect-dlt`, `requeue-dlt`).
 - [x] Tests: expiración simultánea con checkout (`CheckoutExpiryRaceIT`), ventana de gracia (`ReservationExpiryGraceIT`), reconciliación idempotente (`ReconciliationIT`), reinicio durante publicación outbox (`OutboxPublisherIT`).
-- [ ] Documento `docs/failure-lab.md` con qué invariantes permanecen verdaderos.
+- [x] Documento `docs/failure-lab.md` con qué invariantes permanecen verdaderos.
 
 ### Criterio de aceptación
 Escenarios reproducibles demuestran: reservas caducadas liberadas exactamente una vez; sin sobreventa ni stock perdido en carreras; reinicio de consumidor recupera pendientes sin duplicar efectos.
